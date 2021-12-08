@@ -50,6 +50,10 @@ public class Hexagon extends JButton implements MouseListener {
 		neighbors = arrayList;
 	}
 
+	public void addNeighbor(Hexagon hexagon){
+		neighbors.add(hexagon);
+	}
+
 	public void setTexture(Texture texture) {
 		this.texture = texture;
 	}
@@ -86,6 +90,7 @@ public class Hexagon extends JButton implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("X : " + this.posX);
 		System.out.println("Y : " + this.posY);
+		System.out.println("Id : " + this.id);
 		System.out.println("Voisin début");
 		for(int i = 0; i<this.getNeighbors().size(); i++){
 			System.out.println(this.getNeighbors().get(i).getId());
