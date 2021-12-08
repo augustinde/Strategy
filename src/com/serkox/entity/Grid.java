@@ -218,11 +218,16 @@ public class Grid extends JPanel {
                 }
 
                 cpt++;
-                //ng.forEach(e -> System.out.println(e.getId()));
-                currentHexagon.setNeighbors(ng);
-                for(int k = 0; k<currentHexagon.getNeighbors().size(); k++){
-                    System.out.println("Neig : " + currentHexagon.getNeighbors().get(k).getId());
+
+
+                for(int k = 0; k<ng.size(); k++){
+
+                    if(!ng.get(k).isContainCapital() && !ng.get(k).isObstacle()) {
+                        currentHexagon.addNeighbor(ng.get(k));
+                    }
+
                 }
+
             }
 
 

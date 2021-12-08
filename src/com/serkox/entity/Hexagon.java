@@ -15,7 +15,7 @@ public class Hexagon extends JButton implements MouseListener {
 	private Texture texture;
 	private boolean containCapital;
 	private Unit unit;
-	private static ArrayList<Hexagon> neighbors;
+	private ArrayList<Hexagon> neighbors;
 
 	public Hexagon(int p_Id) {
 		this.id = p_Id;
@@ -92,9 +92,11 @@ public class Hexagon extends JButton implements MouseListener {
 		System.out.println("Y : " + this.posY);
 		System.out.println("Id : " + this.id);
 		System.out.println("Voisin début");
+
 		for(int i = 0; i<this.getNeighbors().size(); i++){
 			System.out.println(this.getNeighbors().get(i).getId());
 		}
+
 		System.out.println("Voisin fin");
 		if(this.unit != null)
 			System.out.println("Il y a déjà une unité sur cet héxagone !");
