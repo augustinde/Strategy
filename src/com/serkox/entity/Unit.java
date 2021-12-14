@@ -14,7 +14,7 @@ public class Unit {
     public Unit(){
         this.damage = 15;
         this.health = 50;
-        this.goldCost = 75;
+        goldCost = 75;
         this.speed = 1;
         this.level = 1;
     }
@@ -40,7 +40,7 @@ public class Unit {
     }
 
     public void setGoldCost(int goldCost) {
-        this.goldCost = goldCost;
+        goldCost = goldCost;
     }
 
     public int getHealth() {
@@ -61,5 +61,13 @@ public class Unit {
 
     public String getId() {
         return id;
+    }
+
+    public void move(Hexagon hexagon){
+
+    }
+
+    public void attack(Hexagon hexagon){
+
     }
 }

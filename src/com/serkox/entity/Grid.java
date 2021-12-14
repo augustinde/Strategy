@@ -50,10 +50,13 @@ public class Grid extends JPanel {
         createGrid();
         System.out.println(this.hexagons.size());
         //this.lineList.forEach(itemLine -> itemLine.getHexagonList().forEach(m -> this.add(m)));
-        this.hexagons.forEach(item -> this.add(item));
+        this.hexagons.forEach(this::add);
         addNeighbors();
     }
 
+    /**
+     * Génération des hexagons de la grille (n'affiche pas)
+     */
     public void createGrid(){
         //lineList = new ArrayList<Line>();
         hexagons = new ArrayList<Hexagon>();
@@ -101,10 +104,13 @@ public class Grid extends JPanel {
 
                 if(this.map[i][j] == 1){
                     hexagon.setObstacle(false);
+                    hexagon.setTexture(this.grass);
                 }else if(this.map[i][j] == 2){
                     hexagon.setObstacle(true);
+                    hexagon.setTexture(this.water);
                 }else{
                     hexagon.setObstacle(true);
+                    hexagon.setTexture(this.grass);
                 }
 
                 this.hexagons.add(hexagon);
@@ -143,6 +149,7 @@ public class Grid extends JPanel {
                     g2d.setColor(Color.black);
 
                     //Choix de la texture
+                  /*
                     Texture texture;
 
                     if(this.map[i][j] == 1){
@@ -151,9 +158,9 @@ public class Grid extends JPanel {
                         texture = this.water;
                     }else{
                         texture = this.grass;
-                    }
+                    }*/
 
-                    g2d.drawImage(texture.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+                    g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
 
                     /*if(hexagon.getNeighbors().get(0) != null){
                         g2d.setColor(Color.red);
@@ -162,10 +169,10 @@ public class Grid extends JPanel {
 
                     //Ajout des capitales
                     if(this.map[i][j] == 10){
-                        g2d.drawImage(this.textureCapitalJoueur.getTexture(), hexagon.getPosX(),hexagon.getPosY()-25, 100, 100, null);
+                        g2d.drawImage(this.textureCapitalJoueur.getTexture(), hexagon.getPosX(),hexagon.getPosY()-10, 100, 100, null);
                         hexagon.setContainCapital(true);
                     }else if(this.map[i][j] == 20){
-                        g2d.drawImage(this.textureCapitalIa.getTexture(), hexagon.getPosX(),hexagon.getPosY()-25, 100, 100, null);
+                        g2d.drawImage(this.textureCapitalIa.getTexture(), hexagon.getPosX(),hexagon.getPosY()-10, 100, 100, null);
                         hexagon.setContainCapital(true);
                     }else{
                         hexagon.setContainCapital(false);
@@ -192,6 +199,9 @@ public class Grid extends JPanel {
         return capitalIa;
     }
 
+    /**
+     * Ajout des voisins a chaque hexagon
+     */
     public void addNeighbors(){
         int cpt = 0;
 
@@ -202,10 +212,9 @@ public class Grid extends JPanel {
                 Hexagon currentHexagon = hexagons.get(cpt);
                 System.out.println("Id " + currentHexagon.getId());
                 ArrayList<Hexagon> ng = new ArrayList<Hexagon>();
-                int v1, v2;
-                Hexagon voisin1;
-                Hexagon voisin2;
-
+                int v1, v2, v3, v4, v5, v6;
+                Hexagon voisin1, voisin2, voisin3, voisin4, voisin5, voisin6;
+                //-13 -14 +13 +14 +1 -1
                 if(i>=1){
                     v1 = currentHexagon.getId() - 13;
                     v2 = currentHexagon.getId() - 14;
@@ -217,6 +226,28 @@ public class Grid extends JPanel {
                     System.out.println("Voisin 2 : " + voisin2.getId());
                 }
 
+                if(j >= 1 && j < this.map[i].length-1){
+                    v3 = currentHexagon.getId() - 1;
+                    voisin3 = hexagons.get(v3);
+                    ng.add(voisin3);
+                    System.out.println("Voisin 3 : " + voisin3.getId());
+                    v4 = currentHexagon.getId() + 1;
+                    System.out.println("V4 : " + v4);
+                    voisin4 = hexagons.get(v4);
+                    ng.add(voisin4);
+                    System.out.println("Voisin 4 : " + voisin4.getId());
+                }
+
+                if(i <= this.map.length-1){
+                    v5 = currentHexagon.getId() + 13;
+                    v6 = currentHexagon.getId() + 14;
+                    voisin5 = hexagons.get(v5);
+                    voisin6 = hexagons.get(v6);
+                    ng.add(voisin5);
+                    ng.add(voisin6);
+                    System.out.println("Voisin 5 : " + voisin5.getId());
+                    System.out.println("Voisin 6 : " + voisin6.getId());
+                }
                 cpt++;
 
 

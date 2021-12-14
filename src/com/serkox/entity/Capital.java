@@ -1,7 +1,6 @@
 package com.serkox.entity;
 
 import java.util.ArrayList;
-import java.util.TimerTask;
 
 public class Capital {
 

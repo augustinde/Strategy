@@ -19,7 +19,7 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public Hexagon(int p_Id) {
 		this.id = p_Id;
-		System.out.println(this.id);
+		//System.out.println(this.id);
 		this.unit = null;
 		this.setBackground(new Color(0,0,0,0));
 		this.setOpaque(false);
@@ -91,22 +91,35 @@ public class Hexagon extends JButton implements MouseListener {
 		System.out.println("X : " + this.posX);
 		System.out.println("Y : " + this.posY);
 		System.out.println("Id : " + this.id);
-		System.out.println("Voisin début");
 
+		/*System.out.println("Voisin début");
 		for(int i = 0; i<this.getNeighbors().size(); i++){
 			System.out.println(this.getNeighbors().get(i).getId());
 		}
+		System.out.println("Voisin fin");*/
 
-		System.out.println("Voisin fin");
-		if(this.unit != null)
-			System.out.println("Il y a déjà une unité sur cet héxagone !");
-		else {
-			if(Interface.wantPlaceUnit() && Capital.getCurrentGold() >= Unit.getGoldCost()) {
+		//Placement unité
+		if (Interface.wantPlaceUnit() && Grid.getCapitalJoueur().getCurrentGold() >= Unit.getGoldCost()) {
+			if (this.unit != null){
+				System.out.println("Il y a déjà une unité sur cet héxagone !");
+			}else {
+				//Poser une unité
 				System.out.println("Ajout d'une nouvelle unité.");
+				//this.setTexture(new Texture("voisin"));
 				this.unit = new Unit();
-				Capital.setCurrentGold(Capital.getCurrentGold() - Unit.getGoldCost());
+				Grid.getCapitalJoueur().setCurrentGold(Grid.getCapitalJoueur().getCurrentGold() - Unit.getGoldCost());
+			}
+
+		} else {
+			System.out.println("Déplacer unité !");
+			for (Hexagon neighbor : this.neighbors){
+
+				neighbor.setTexture(new Texture("voisin"));
+
 			}
 		}
+
+
 	}
 
 	@Override
