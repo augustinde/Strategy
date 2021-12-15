@@ -109,11 +109,11 @@ public class Hexagon extends JButton implements MouseListener {
 		if(this.checkNearbyCapital()){
 			System.out.println("Ajout d'une nouvelle unité.");
 			Interface.setMessage("Unité placé !");
-			this.unit = new Unit();
+			this.unit = new Unit(this);
 			Grid.getCapitalJoueur().setCurrentGold(Grid.getCapitalJoueur().getCurrentGold() - Unit.getGoldCost());
 		}else{
 			System.out.println("Impossible de placer une unité loin de la capital !");
-			Interface.setMessage("Impossibilite de placer une unité loin de la capital !");
+			Interface.setMessage("Impossible de placer une unité loin de la capital !");
 		}
 
 	}
@@ -144,28 +144,47 @@ public class Hexagon extends JButton implements MouseListener {
 
 			if (this.unit != null){
 
-				if(!this.active) {
-					System.out.println("Le joueur souhaite déplacer une unité !");
-					Interface.setMessage("Le joueur souhaite déplacer une unité !");
-					this.active = true;
-					for (Hexagon neighbor : this.neighbors) {
+				if(!Interface.isWantDeplace()) {
 
-						if (neighbor.isContainCapital()) {
-							if (neighbor.getCapital().getId() == 1) {
-								neighbor.setTexture(new Texture("voisin_joueur"));
+					// if(!this.active) {
+
+						//L'unite veut se déplacer
+						//this.unit.setWantMove(true);
+						//this.active = true;
+						Interface.setWantDeplace(true);
+						Interface.setUnitWantDeplace(this.unit);
+
+						System.out.println("Le joueur souhaite déplacer une unité !");
+						Interface.setMessage("Le joueur souhaite déplacer une unité !");
+						/*for (Hexagon neighbor : this.neighbors) {
+
+							if (neighbor.isContainCapital()) {
+
+								if (neighbor.getCapital().getId() == 1) {
+									neighbor.setTexture(new Texture("voisin_joueur"));
+								} else {
+									neighbor.setTexture(new Texture("voisin_ia"));
+								}
+
 							} else {
-								neighbor.setTexture(new Texture("voisin_ia"));
-							}
-						} else {
-							neighbor.setTexture(new Texture("voisin"));
+								neighbor.setTexture(new Texture("voisin"));
 
-						}
-					}
+							}
+
+						}*/
+
+					//}
+
 				}else{
+
+					//L'unité ne veut plus se déplacer
+					//this.active = false;
+					//this.unit.setWantMove(false);
+					Interface.setWantDeplace(false);
 					System.out.println("Le joueur ne souhaite plus déplacer d' unité !");
 					Interface.setMessage("Le joueur ne souhaite plus déplacer d'unité !");
-					this.active = false;
-					for (Hexagon neighbor : this.neighbors) {
+					Interface.setUnitWantDeplace(null);
+					/*for (Hexagon neighbor : this.neighbors) {
 
 						if (neighbor.isContainCapital()) {
 							if (neighbor.getCapital().getId() == 1) {
@@ -177,7 +196,19 @@ public class Hexagon extends JButton implements MouseListener {
 							neighbor.setTexture(new Texture("grass"));
 
 						}
-					}
+					}*/
+				}
+			}else {
+				if (Interface.isWantDeplace() && !this.isContainCapital()) {
+					Hexagon lastHexagon = Interface.getUnitWantDeplace().getHexagon();
+					Interface.setMessage("Id de la destination : " + this.getId());
+					Interface.getUnitWantDeplace().move(this);
+					this.setUnit(Interface.getUnitWantDeplace());
+					lastHexagon.setUnit(null);
+					Interface.setWantDeplace(false);
+					Interface.setUnitWantDeplace(null);
+					System.out.println("Fin du déplacement  !");
+					Interface.setMessage("Fin du déplacement !");
 				}
 			}
 

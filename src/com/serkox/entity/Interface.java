@@ -17,11 +17,15 @@ public class Interface extends JPanel{
 
     private int healthIa;
     private static boolean addUnit;
+    private static boolean wantDeplace;
     private static String message = "";
+    private static Unit unitWantDeplace;
 
     public Interface(){
         super();
         addUnit = false;
+        wantDeplace = false;
+        unitWantDeplace = null;
         //this.texture = new Texture("interface_joueur");
         this.textureGold = new Texture("money");
         this.textureHealth = new Texture("vie");
@@ -60,6 +64,22 @@ public class Interface extends JPanel{
 
     public static void setMessage(String message) {
         Interface.message = message;
+    }
+
+    public static boolean isWantDeplace() {
+        return wantDeplace;
+    }
+
+    public static void setWantDeplace(boolean wantDeplace) {
+        Interface.wantDeplace = wantDeplace;
+    }
+
+    public static Unit getUnitWantDeplace() {
+        return unitWantDeplace;
+    }
+
+    public static void setUnitWantDeplace(Unit unitWantDeplace) {
+        Interface.unitWantDeplace = unitWantDeplace;
     }
 
     protected void paintComponent(Graphics g) {

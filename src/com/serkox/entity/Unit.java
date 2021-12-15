@@ -10,13 +10,16 @@ public class Unit {
     private static int goldCost;
     private int level;
     private int speed;
+    private Hexagon hexagon;
+    private boolean wantMove;
 
-    public Unit(){
+    public Unit(Hexagon p_hexagon){
         this.damage = 15;
         this.health = 50;
         goldCost = 10;
         this.speed = 1;
         this.level = 1;
+        this.hexagon = p_hexagon;
     }
 
     public int getLevel() {
@@ -63,11 +66,28 @@ public class Unit {
         return id;
     }
 
-    public void move(Hexagon hexagon){
-
+    public void move(Hexagon p_hexagon){
+        this.hexagon = p_hexagon;
+        Interface.setMessage("X : " + this.hexagon.getPosX() + " Y : " + this.hexagon.getPosY() + " Id : " + this.hexagon.getId());
     }
 
     public void attack(Hexagon hexagon){
 
+    }
+
+    public Hexagon getHexagon() {
+        return hexagon;
+    }
+
+    public void setHexagon(Hexagon hexagon) {
+        this.hexagon = hexagon;
+    }
+
+    public boolean isWantMove() {
+        return wantMove;
+    }
+
+    public void setWantMove(boolean wantMove) {
+        this.wantMove = wantMove;
     }
 }
