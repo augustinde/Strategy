@@ -3,10 +3,11 @@ package com.serkox.entity;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Grid extends JPanel {
 
-    private ArrayList<Hexagon> hexagons;
+    private List<Hexagon> hexagons;
 
     private Texture grass;
     private Texture water;
@@ -25,7 +26,7 @@ public class Grid extends JPanel {
             {0,10,1,2,2,1,1,2,2,1,1,1,0},
             {0,1,1,1,1,1,1,2,1,2,1,1,1,0},
             {0,1,1,1,1,1,2,1,1,1,1,2,0},
-            {0,1,1,2,1,2,1,1,1,1,2,2,1,0},
+            {0,1,1,1,1,2,1,1,1,1,2,2,1,0},
             {0,1,1,1,1,1,1,1,1,1,20,1,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
@@ -101,13 +102,23 @@ public class Grid extends JPanel {
                     hexagon.setBounds(hexagon.getPosX()+5, hexagon.getPosY()+5 , 90, 90);
                 }
 
-
+                //Choix de la texture
                 if(this.map[i][j] == 1){
                     hexagon.setObstacle(false);
                     hexagon.setTexture(this.grass);
                 }else if(this.map[i][j] == 2){
                     hexagon.setObstacle(true);
                     hexagon.setTexture(this.water);
+                }else if(this.map[i][j] == 10){
+                    hexagon.setObstacle(false);
+                    hexagon.setContainCapital(true);
+                    hexagon.setTexture(this.textureCapitalJoueur);
+                    hexagon.setCapital(capitalJoueur);
+                }else if(this.map[i][j] == 20){
+                    hexagon.setObstacle(false);
+                    hexagon.setContainCapital(true);
+                    hexagon.setTexture(this.textureCapitalIa);
+                    hexagon.setCapital(capitalIa);
                 }else{
                     hexagon.setObstacle(true);
                     hexagon.setTexture(this.grass);
@@ -123,11 +134,11 @@ public class Grid extends JPanel {
         System.out.println("Grille créé !");
     }
 
-    public ArrayList<Hexagon> getHexagons() {
+    public List<Hexagon> getHexagons() {
         return hexagons;
     }
 
-    public void setHexagons(ArrayList<Hexagon> hexagons) {
+    public void setHexagons(List<Hexagon> hexagons) {
         this.hexagons = hexagons;
     }
 
@@ -148,19 +159,6 @@ public class Grid extends JPanel {
 
                     g2d.setColor(Color.black);
 
-                    //Choix de la texture
-                  /*
-                    Texture texture;
-
-                    if(this.map[i][j] == 1){
-                        texture = this.grass;
-                    }else if(this.map[i][j] == 2){
-                        texture = this.water;
-                    }else{
-                        texture = this.grass;
-                    }*/
-
-                    g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
 
                     /*if(hexagon.getNeighbors().get(0) != null){
                         g2d.setColor(Color.red);
@@ -168,7 +166,7 @@ public class Grid extends JPanel {
                     }*/
 
                     //Ajout des capitales
-                    if(this.map[i][j] == 10){
+                   /* if(this.map[i][j] == 10){
                         g2d.drawImage(this.textureCapitalJoueur.getTexture(), hexagon.getPosX(),hexagon.getPosY()-10, 100, 100, null);
                         hexagon.setContainCapital(true);
                     }else if(this.map[i][j] == 20){
@@ -176,6 +174,12 @@ public class Grid extends JPanel {
                         hexagon.setContainCapital(true);
                     }else{
                         hexagon.setContainCapital(false);
+                    }*/
+
+                    if(hexagon.isContainCapital()){
+                        g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(),hexagon.getPosY(), 100, 100, null);
+                    }else{
+                        g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
                     }
 
                     //Affichage des unités
@@ -215,6 +219,8 @@ public class Grid extends JPanel {
                 int v1, v2, v3, v4, v5, v6;
                 Hexagon voisin1, voisin2, voisin3, voisin4, voisin5, voisin6;
                 //-13 -14 +13 +14 +1 -1
+
+                //Ajout des 2 voisins au nord
                 if(i>=1){
                     v1 = currentHexagon.getId() - 13;
                     v2 = currentHexagon.getId() - 14;
@@ -226,6 +232,7 @@ public class Grid extends JPanel {
                     System.out.println("Voisin 2 : " + voisin2.getId());
                 }
 
+                //Ajout des voisins droit et gauche
                 if(j >= 1 && j < this.map[i].length-1){
                     v3 = currentHexagon.getId() - 1;
                     voisin3 = hexagons.get(v3);
@@ -236,9 +243,16 @@ public class Grid extends JPanel {
                     voisin4 = hexagons.get(v4);
                     ng.add(voisin4);
                     System.out.println("Voisin 4 : " + voisin4.getId());
+
+                    /*v3 = currentHexagon.getPosX() + 100;
+                    v4 = currentHexagon.getPosX() - 100;
+                    voisin3 = (Hexagon) hexagons.stream().filter(hex -> hex.getPosX() == v3).map(Hexagon::getId);
+                    ng.add(voisin3);*/
+
                 }
 
-                if(i <= this.map.length-1){
+                //Ajout des 2 voisins au sud
+                if(i < this.map.length-1){
                     v5 = currentHexagon.getId() + 13;
                     v6 = currentHexagon.getId() + 14;
                     voisin5 = hexagons.get(v5);
@@ -253,7 +267,7 @@ public class Grid extends JPanel {
 
                 for(int k = 0; k<ng.size(); k++){
 
-                    if(!ng.get(k).isContainCapital() && !ng.get(k).isObstacle()) {
+                    if(/*!ng.get(k).isContainCapital() &&*/ !ng.get(k).isObstacle()) {
                         currentHexagon.addNeighbor(ng.get(k));
                     }
 

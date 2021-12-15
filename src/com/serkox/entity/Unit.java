@@ -14,7 +14,7 @@ public class Unit {
     public Unit(){
         this.damage = 15;
         this.health = 50;
-        goldCost = 75;
+        goldCost = 10;
         this.speed = 1;
         this.level = 1;
     }

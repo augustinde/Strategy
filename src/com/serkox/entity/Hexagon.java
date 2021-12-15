@@ -16,9 +16,12 @@ public class Hexagon extends JButton implements MouseListener {
 	private boolean containCapital;
 	private Unit unit;
 	private ArrayList<Hexagon> neighbors;
+	private Capital capital;
+	private boolean active;
 
 	public Hexagon(int p_Id) {
 		this.id = p_Id;
+		this.active = false;
 		//System.out.println(this.id);
 		this.unit = null;
 		this.setBackground(new Color(0,0,0,0));
@@ -86,6 +89,35 @@ public class Hexagon extends JButton implements MouseListener {
 		this.posX = posX;
 	}
 
+	public boolean checkNearbyCapital(){
+
+		boolean r = false;
+
+		for (Hexagon neighbor : this.neighbors){
+			if(neighbor.isContainCapital()){
+				r = true;
+				System.out.println("CAPITAAAAL");
+			}else{
+				System.out.println("PAS CAPITAL");
+			}
+		}
+		return r;
+	}
+
+	public void placeUnit(){
+
+		if(this.checkNearbyCapital()){
+			System.out.println("Ajout d'une nouvelle unité.");
+			Interface.setMessage("Unité placé !");
+			this.unit = new Unit();
+			Grid.getCapitalJoueur().setCurrentGold(Grid.getCapitalJoueur().getCurrentGold() - Unit.getGoldCost());
+		}else{
+			System.out.println("Impossible de placer une unité loin de la capital !");
+			Interface.setMessage("Impossibilite de placer une unité loin de la capital !");
+		}
+
+	}
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("X : " + this.posX);
@@ -101,24 +133,55 @@ public class Hexagon extends JButton implements MouseListener {
 		//Placement unité
 		if (Interface.wantPlaceUnit() && Grid.getCapitalJoueur().getCurrentGold() >= Unit.getGoldCost()) {
 			if (this.unit != null){
-				System.out.println("Il y a déjà une unité sur cet héxagone !");
+				System.out.println("Il y a déjà une unité sur cet hexagone !");
+				Interface.setMessage("Il y a déjà une unité sur cet hexagone !");
 			}else {
 				//Poser une unité
-				System.out.println("Ajout d'une nouvelle unité.");
-				//this.setTexture(new Texture("voisin"));
-				this.unit = new Unit();
-				Grid.getCapitalJoueur().setCurrentGold(Grid.getCapitalJoueur().getCurrentGold() - Unit.getGoldCost());
+				this.placeUnit();
 			}
 
 		} else {
-			System.out.println("Déplacer unité !");
-			for (Hexagon neighbor : this.neighbors){
 
-				neighbor.setTexture(new Texture("voisin"));
+			if (this.unit != null){
 
+				if(!this.active) {
+					System.out.println("Le joueur souhaite déplacer une unité !");
+					Interface.setMessage("Le joueur souhaite déplacer une unité !");
+					this.active = true;
+					for (Hexagon neighbor : this.neighbors) {
+
+						if (neighbor.isContainCapital()) {
+							if (neighbor.getCapital().getId() == 1) {
+								neighbor.setTexture(new Texture("voisin_joueur"));
+							} else {
+								neighbor.setTexture(new Texture("voisin_ia"));
+							}
+						} else {
+							neighbor.setTexture(new Texture("voisin"));
+
+						}
+					}
+				}else{
+					System.out.println("Le joueur ne souhaite plus déplacer d' unité !");
+					Interface.setMessage("Le joueur ne souhaite plus déplacer d'unité !");
+					this.active = false;
+					for (Hexagon neighbor : this.neighbors) {
+
+						if (neighbor.isContainCapital()) {
+							if (neighbor.getCapital().getId() == 1) {
+								neighbor.setTexture(new Texture("capital_joueur"));
+							} else {
+								neighbor.setTexture(new Texture("capital_ia"));
+							}
+						} else {
+							neighbor.setTexture(new Texture("grass"));
+
+						}
+					}
+				}
 			}
-		}
 
+		}
 
 	}
 
@@ -134,12 +197,22 @@ public class Hexagon extends JButton implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		/*for (Hexagon neighbor : this.neighbors){
 
+			neighbor.setTexture(new Texture("voisin"));
+
+		}
+		*/
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		/*for (Hexagon neighbor : this.neighbors){
 
+			neighbor.setTexture(new Texture("grass"));
+
+		}
+		*/
 	}
 
 	public Unit getUnit() {
@@ -152,5 +225,21 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public ArrayList<Hexagon> getNeighbors(){
 		return neighbors;
+	}
+
+	public Capital getCapital() {
+		return capital;
+	}
+
+	public void setCapital(Capital capital) {
+		this.capital = capital;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }
