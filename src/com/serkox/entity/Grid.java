@@ -10,6 +10,7 @@ public class Grid extends JPanel {
     private static List<Hexagon> hexagons;
 
     private final Texture grass;
+    private static Texture grass_path;
     private final Texture water;
     private final Texture grass_dark;
     private final Texture textureCapitalIa;
@@ -21,11 +22,11 @@ public class Grid extends JPanel {
 
     private final int[][] map = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,1,2,1,1,1,1,1,1,1,1,1,0},
+            {0,1,1,1,1,1,1,1,1,1,1,1,0},
             {0,1,2,1,1,1,1,1,1,1,2,2,1,0},
             {0,10,1,2,2,1,1,2,2,1,1,1,0},
             {0,1,1,1,1,1,1,2,1,2,1,1,1,0},
-            {0,1,1,1,1,1,2,1,1,1,1,2,0},
+            {0,1,1,1,1,1,2,1,1,1,1,1,0},
             {0,1,1,1,1,2,1,1,1,1,2,2,1,0},
             {0,1,1,1,1,1,1,1,1,1,20,1,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -41,6 +42,7 @@ public class Grid extends JPanel {
         this.setLayout(null);
 
         this.grass = new Texture("grass");
+        grass_path = new Texture("voisin");
         this.grass_dark = new Texture("grass_dark");
         this.water = new Texture("water");
         this.textureCapitalIa = new Texture("capital_ia");
@@ -52,6 +54,14 @@ public class Grid extends JPanel {
         System.out.println(hexagons.size());
         hexagons.forEach(this::add);
         addNeighbors();
+    }
+
+    public static Texture getGrass_path() {
+        return grass_path;
+    }
+
+    public static void setGrass_path(Texture grass_path) {
+        Grid.grass_path = grass_path;
     }
 
     /**
@@ -172,7 +182,7 @@ public class Grid extends JPanel {
                     g2d.drawImage(this.grass_dark.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
                 }
                 g2d.setFont(new Font("default", Font.BOLD, 16));
-                g2d.drawString(hexagon.getDistance() + " " + hexagon.isView(), hexagon.getPosX()+40, hexagon.getPosY()+40);
+                g2d.drawString(String.valueOf(hexagon.getId() + " " + hexagon.getDistance()), hexagon.getPosX()+40, hexagon.getPosY()+40);
             }
         }
 

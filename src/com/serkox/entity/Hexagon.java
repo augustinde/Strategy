@@ -149,26 +149,12 @@ public class Hexagon extends JButton implements MouseListener {
 
 					//L'unite veut se déplacer
 					this.unit.setWantMove(true);
-					//this.active = true;
-					//Interface.setWantDeplace(true);
 					Grid.getCapitalJoueur().setUnitToDeplace(this.unit);
 					System.out.println(Grid.getCapitalJoueur().getUnitToDeplace());
 
 					System.out.println("Le joueur souhaite déplacer une unité !");
 					Interface.setMessage("Le joueur souhaite déplacer une unité !");
 					Grid.getCapitalJoueur().getUnitToDeplace().calculDistance();
-
-					/*for (Hexagon neighbor : this.neighbors) {
-						if (neighbor.isContainCapital()) {
-							if (neighbor.getCapital().getId() == 1) {
-								neighbor.setTexture(new Texture("voisin_joueur"));
-							} else {
-								neighbor.setTexture(new Texture("voisin_ia"));
-							}
-						} else {
-							neighbor.setTexture(new Texture("voisin"));
-						}
-					}*/
 
 				//L'unité veut
 				}else{
@@ -191,6 +177,7 @@ public class Hexagon extends JButton implements MouseListener {
 
 					Hexagon startHexagon = Grid.getCapitalJoueur().getUnitToDeplace().getHexagon();
 					Interface.setMessage("Id de la destination : " + this.getId());
+					Grid.getCapitalJoueur().getUnitToDeplace().moveToDestination(this);
 					//System.out.println("Fin du déplacement  !");
 					//Interface.setMessage("Fin du déplacement !");
 				}
@@ -213,6 +200,10 @@ public class Hexagon extends JButton implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+
+		if(Grid.getCapitalJoueur().getUnitToDeplace() != null && Grid.getCapitalJoueur().getUnitToDeplace().isWantMove() && this.getUnit() == null && !this.isContainCapital()){
+			Grid.getCapitalJoueur().getUnitToDeplace().path(this);
+		}
 		/*for (Hexagon neighbor : this.neighbors){
 
 			neighbor.setTexture(new Texture("voisin"));

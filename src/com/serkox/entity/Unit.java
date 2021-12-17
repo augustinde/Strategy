@@ -12,6 +12,8 @@ public class Unit {
     private int speed;
     private Hexagon hexagon;
     private boolean wantMove;
+    private List<Hexagon> path;
+    private int radius;
 
     public Unit(Hexagon p_hexagon){
         this.damage = 15;
@@ -20,6 +22,8 @@ public class Unit {
         this.speed = 1;
         this.level = 1;
         this.hexagon = p_hexagon;
+        this.path = new ArrayList<Hexagon>();
+        this.radius = 20;
     }
 
     public int getLevel() {
@@ -66,9 +70,37 @@ public class Unit {
         return id;
     }
 
+    public void moveToDestination(Hexagon p_hexagon){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+               for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                   Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().get(i));
+                   Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
+                   try {
+                       Thread.sleep(675);
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+               }
+            }
+        });
+        thread.start();
+
+    }
+
     public void move(Hexagon p_hexagon){
-        this.hexagon = p_hexagon;
-        Interface.setMessage("X : " + this.hexagon.getPosX() + " Y : " + this.hexagon.getPosY() + " Id : " + this.hexagon.getId());
+        Hexagon hexagonDestination = p_hexagon;
+
+        if(hexagonDestination.getDistance() <= this.radius && hexagonDestination.getUnit() == null && hexagonDestination.getDistance() != 0){
+
+            Hexagon hexagonDepart = getHexagon();
+            hexagonDepart.setUnit(null);
+
+            setHexagon(hexagonDestination);
+            hexagonDestination.setUnit(this);
+
+        }
     }
 
     public void attack(Hexagon hexagon){
@@ -99,7 +131,7 @@ public class Unit {
             for (Hexagon neighbor : neighbors) {
 
                 if (neighbor != null) {
-                    if (!neighbor.isView() && !neighbor.isObstacle()) {
+                    if (!neighbor.isView() && !neighbor.isObstacle() && !neighbor.isContainCapital()) {
                         neighbor.setView(true);
                         neighbor.setDistance(hexagon.getDistance() + 1);
                         System.out.println(neighbor.getId() + " : " + neighbor.getDistance());
@@ -111,6 +143,46 @@ public class Unit {
 
         }
 
+    }
+
+    public void path(Hexagon p_hexagon){
+        if(this.path.size() != 0){
+            resetPath();
+        }
+
+        Hexagon currentHexagon = getHexagon();
+        Hexagon hexagonDestination = p_hexagon;
+
+        this.path.add(hexagonDestination);
+
+        while (hexagonDestination.getDistance() != currentHexagon.getDistance()){
+
+            int distanceDestination = hexagonDestination.getDistance();
+
+            for(Hexagon neighbors : hexagonDestination.getNeighbors()){
+                if(neighbors != null){
+                    if(neighbors.getDistance() == (distanceDestination-1) && hexagonDestination.getUnit() == null) {
+                        this.path.add(neighbors);
+                        hexagonDestination = neighbors;
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        this.path.remove(path.size()-1);
+        System.out.println(this.path.size());
+        if(this.path.size() <= this.radius){
+            for(Hexagon hexagonPath : this.path){
+                hexagonPath.setTexture(Grid.getGrass_path());
+            }
+        }
+    }
+
+    public void resetPath(){
+        Grid.resetTextureHexagons();
+        this.path.clear();
     }
 
     public Hexagon getHexagon() {
@@ -127,5 +199,21 @@ public class Unit {
 
     public void setWantMove(boolean wantMove) {
         this.wantMove = wantMove;
+    }
+
+    public List<Hexagon> getPath() {
+        return path;
+    }
+
+    public void setPath(List<Hexagon> path) {
+        this.path = path;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }
