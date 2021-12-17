@@ -1,6 +1,6 @@
 package com.serkox.entity;
 
-import java.util.UUID;
+import java.util.*;
 
 public class Unit {
 
@@ -72,6 +72,44 @@ public class Unit {
     }
 
     public void attack(Hexagon hexagon){
+
+    }
+
+    /**
+     * Calcul de la distance par rapport aux hexagons
+     */
+    public void calculDistance(){
+
+        Grid.resetTextureHexagons();
+        Grid.resetViewHexagons();
+
+        Hexagon hexagonDepart = this.getHexagon();
+
+        hexagonDepart.setView(true);
+        hexagonDepart.setDistance(0);
+
+        List<Hexagon> file = new ArrayList<Hexagon>();
+        file.add(hexagonDepart);
+
+        while (file.size() != 0){
+
+            Hexagon hexagon = file.get(0);
+            List<Hexagon> neighbors = hexagon.getNeighbors();
+
+            for (Hexagon neighbor : neighbors) {
+
+                if (neighbor != null) {
+                    if (!neighbor.isView() && !neighbor.isObstacle()) {
+                        neighbor.setView(true);
+                        neighbor.setDistance(hexagon.getDistance() + 1);
+                        System.out.println(neighbor.getId() + " : " + neighbor.getDistance());
+                        file.add(neighbor);
+                    }
+                }
+            }
+            file.remove(0);
+
+        }
 
     }
 

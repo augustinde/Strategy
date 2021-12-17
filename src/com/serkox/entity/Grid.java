@@ -7,19 +7,19 @@ import java.util.List;
 
 public class Grid extends JPanel {
 
-    private List<Hexagon> hexagons;
+    private static List<Hexagon> hexagons;
 
-    private Texture grass;
-    private Texture water;
-    private Texture grass_dark;
-    private Texture textureCapitalIa;
-    private Texture textureCapitalJoueur;
-    private Texture infantry;
+    private final Texture grass;
+    private final Texture water;
+    private final Texture grass_dark;
+    private final Texture textureCapitalIa;
+    private final Texture textureCapitalJoueur;
+    private final Texture infantry;
 
     private static Capital capitalJoueur;
     private static Capital capitalIa;
 
-    private int[][] map = {
+    private final int[][] map = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,1,2,1,1,1,1,1,1,1,1,1,0},
             {0,1,2,1,1,1,1,1,1,1,2,2,1,0},
@@ -46,12 +46,11 @@ public class Grid extends JPanel {
         this.textureCapitalIa = new Texture("capital_ia");
         this.textureCapitalJoueur = new Texture("capital_joueur");
         this.infantry = new Texture("infantry");
-        capitalJoueur = new Capital(1);
-        capitalIa = new Capital(2);
+        capitalJoueur = new Capital(1, false);
+        capitalIa = new Capital(2, false);
         createGrid();
-        System.out.println(this.hexagons.size());
-        //this.lineList.forEach(itemLine -> itemLine.getHexagonList().forEach(m -> this.add(m)));
-        this.hexagons.forEach(this::add);
+        System.out.println(hexagons.size());
+        hexagons.forEach(this::add);
         addNeighbors();
     }
 
@@ -59,7 +58,6 @@ public class Grid extends JPanel {
      * Génération des hexagons de la grille (n'affiche pas)
      */
     public void createGrid(){
-        //lineList = new ArrayList<Line>();
         hexagons = new ArrayList<Hexagon>();
 
         int y1=0,y2=0,y3=0,y4=0,y5=0,y6=0;
@@ -68,7 +66,6 @@ public class Grid extends JPanel {
         int id = 0;
 
         for(int i = 0; i<this.map.length; i++) {
-            //this.lineList.add(new Line());
 
             y1 = ((lg-25)*i);
             y2 = y1+50;
@@ -106,31 +103,35 @@ public class Grid extends JPanel {
                 if(this.map[i][j] == 1){
                     hexagon.setObstacle(false);
                     hexagon.setTexture(this.grass);
+                    hexagon.setTextureBase(this.grass);
                 }else if(this.map[i][j] == 2){
                     hexagon.setObstacle(true);
                     hexagon.setTexture(this.water);
+                    hexagon.setTextureBase(this.water);
                 }else if(this.map[i][j] == 10){
                     hexagon.setObstacle(false);
                     hexagon.setContainCapital(true);
                     hexagon.setTexture(this.textureCapitalJoueur);
+                    hexagon.setTextureBase(this.textureCapitalJoueur);
                     hexagon.setCapital(capitalJoueur);
                 }else if(this.map[i][j] == 20){
                     hexagon.setObstacle(false);
                     hexagon.setContainCapital(true);
                     hexagon.setTexture(this.textureCapitalIa);
+                    hexagon.setTextureBase(this.textureCapitalIa);
                     hexagon.setCapital(capitalIa);
                 }else{
                     hexagon.setObstacle(true);
                     hexagon.setTexture(this.grass);
+                    hexagon.setTextureBase(this.grass);
                 }
 
-                this.hexagons.add(hexagon);
-                System.out.println("X : " + hexagon.getPosX());
-                System.out.println("Y : " + hexagon.getPosY());
+                hexagons.add(hexagon);
+                System.out.println("X : " + hexagon.getPosX() + " Y : " + hexagon.getPosY());
             }
         }
 
-        System.out.println("Hexagon : " + this.hexagons.size());
+        System.out.println("Hexagon : " + hexagons.size());
         System.out.println("Grille créé !");
     }
 
@@ -139,42 +140,23 @@ public class Grid extends JPanel {
     }
 
     public void setHexagons(List<Hexagon> hexagons) {
-        this.hexagons = hexagons;
+        hexagons = hexagons;
     }
 
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        Graphics g2d = (Graphics2D) g;
+        Graphics g2d = g;
         int cpt = 0;
 
         for(int i = 0; i<this.map.length; i++){
-            //System.out.println("Ligne : " + i + " Taille : " + this.map.length);
 
             for(int j = 0; j<this.map[i].length; j++) {
-                Hexagon hexagon = this.hexagons.get(cpt);
-                //System.out.println("J : " + j + " X : " + hexagon.getPosY());
+                Hexagon hexagon = hexagons.get(cpt);
                 cpt++;
 
                 if(this.map[i][j] != 0){
 
                     g2d.setColor(Color.black);
-
-
-                    /*if(hexagon.getNeighbors().get(0) != null){
-                        g2d.setColor(Color.red);
-                        g2d.fillRect(hexagon.getPosX(), hexagon.getPosY(), 10, 10);
-                    }*/
-
-                    //Ajout des capitales
-                   /* if(this.map[i][j] == 10){
-                        g2d.drawImage(this.textureCapitalJoueur.getTexture(), hexagon.getPosX(),hexagon.getPosY()-10, 100, 100, null);
-                        hexagon.setContainCapital(true);
-                    }else if(this.map[i][j] == 20){
-                        g2d.drawImage(this.textureCapitalIa.getTexture(), hexagon.getPosX(),hexagon.getPosY()-10, 100, 100, null);
-                        hexagon.setContainCapital(true);
-                    }else{
-                        hexagon.setContainCapital(false);
-                    }*/
 
                     if(hexagon.isContainCapital()){
                         g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(),hexagon.getPosY(), 100, 100, null);
@@ -189,7 +171,8 @@ public class Grid extends JPanel {
                 }else {
                     g2d.drawImage(this.grass_dark.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
                 }
-                g2d.drawString(String.valueOf(hexagon.getId()), hexagon.getPosX()+40, hexagon.getPosY()+40);
+                g2d.setFont(new Font("default", Font.BOLD, 16));
+                g2d.drawString(hexagon.getDistance() + " " + hexagon.isView(), hexagon.getPosX()+40, hexagon.getPosY()+40);
             }
         }
 
@@ -203,6 +186,18 @@ public class Grid extends JPanel {
         return capitalIa;
     }
 
+    public static void resetTextureHexagons(){
+        for(Hexagon hexagon : hexagons){
+            hexagon.setTexture(hexagon.getTextureBase());
+        }
+    }
+
+    public static void resetViewHexagons(){
+        for(Hexagon hexagon : hexagons){
+            hexagon.setView(false);
+        }
+    }
+
     /**
      * Ajout des voisins a chaque hexagon
      */
@@ -214,7 +209,7 @@ public class Grid extends JPanel {
             for(int j = 0; j<this.map[i].length; j++){
 
                 Hexagon currentHexagon = hexagons.get(cpt);
-                System.out.println("Id " + currentHexagon.getId());
+                //System.out.println("Id " + currentHexagon.getId());
                 ArrayList<Hexagon> ng = new ArrayList<Hexagon>();
                 int v1, v2, v3, v4, v5, v6;
                 Hexagon voisin1, voisin2, voisin3, voisin4, voisin5, voisin6;
@@ -228,8 +223,8 @@ public class Grid extends JPanel {
                     voisin2 = hexagons.get(v2);
                     ng.add(voisin1);
                     ng.add(voisin2);
-                    System.out.println("Voisin 1 : " + voisin1.getId());
-                    System.out.println("Voisin 2 : " + voisin2.getId());
+                    //System.out.println("Voisin 1 : " + voisin1.getId());
+                    //System.out.println("Voisin 2 : " + voisin2.getId());
                 }
 
                 //Ajout des voisins droit et gauche
@@ -237,12 +232,11 @@ public class Grid extends JPanel {
                     v3 = currentHexagon.getId() - 1;
                     voisin3 = hexagons.get(v3);
                     ng.add(voisin3);
-                    System.out.println("Voisin 3 : " + voisin3.getId());
+                    //System.out.println("Voisin 3 : " + voisin3.getId());
                     v4 = currentHexagon.getId() + 1;
-                    System.out.println("V4 : " + v4);
                     voisin4 = hexagons.get(v4);
                     ng.add(voisin4);
-                    System.out.println("Voisin 4 : " + voisin4.getId());
+                    //System.out.println("Voisin 4 : " + voisin4.getId());
 
                     /*v3 = currentHexagon.getPosX() + 100;
                     v4 = currentHexagon.getPosX() - 100;
@@ -259,8 +253,8 @@ public class Grid extends JPanel {
                     voisin6 = hexagons.get(v6);
                     ng.add(voisin5);
                     ng.add(voisin6);
-                    System.out.println("Voisin 5 : " + voisin5.getId());
-                    System.out.println("Voisin 6 : " + voisin6.getId());
+                    //System.out.println("Voisin 5 : " + voisin5.getId());
+                    //System.out.println("Voisin 6 : " + voisin6.getId());
                 }
                 cpt++;
 
@@ -277,49 +271,6 @@ public class Grid extends JPanel {
 
 
         }
-
-
-        /*for(int i = 0; i < lineList.size(); i++){
-            for(int j = 0; j < lineList.get(i).getHexagonList().size(); j++){
-                Hexagon currentHexagon = lineList.get(i).getHexagonList().get(j);
-                ArrayList<Hexagon> ng = new ArrayList<Hexagon>();
-
-                //if()
-
-                /*
-                if(i >= 1){
-                    //Nord ouest => i-1 | j
-                    //ng.add(lineList.get(i-1).getHexagonList().get(j));
-                   // System.out.println("Id voisin " + lineList.get(i-1).getHexagonList().get(j).getId());
-                    //Nord est => i-1 | j+1
-
-                }else{
-                    ng.add(null);
-                }
-
-                if(i <= lineList.size()-1) {
-                    ng.add(lineList.get(i).getHexagonList().get(j));
-
-                }else{
-                    ng.add(null);
-                }
-                currentHexagon.setNeighbors(ng);
-*/
-
-              /*  if(j >= 1){
-                    //Ouest => i | j-1
-                    currentHexagon.getNeighbors().add(lineList.get(i).getHexagonList().get(j-1));
-                    //Est => i | j+1
-                    currentHexagon.getNeighbors().add(lineList.get(i).getHexagonList().get(j+1));
-                }
-                if(i <= lineList.size()-1){
-                    //Sud ouest => i+1 | j
-                    currentHexagon.getNeighbors().add(lineList.get(i+1).getHexagonList().get(j));
-                    //Sud est => i+1 | j+1
-                    currentHexagon.getNeighbors().add(lineList.get(i+1).getHexagonList().get(j+1));
-                }*/
-          //  }
-        //}
 
     }
 }

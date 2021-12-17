@@ -13,13 +13,22 @@ public class Hexagon extends JButton implements MouseListener {
 	private int posY;
 	private boolean isObstacle;
 	private Texture texture;
+	private Texture textureBase;
 	private boolean containCapital;
 	private Unit unit;
 	private ArrayList<Hexagon> neighbors;
 	private Capital capital;
+
+	private boolean view;
+	private int distance = 0;
+
+	/**
+	 * Détermine si l'hexagon est cliqué ou non
+	 */
 	private boolean active;
 
 	public Hexagon(int p_Id) {
+		this.view = false;
 		this.id = p_Id;
 		this.active = false;
 		//System.out.println(this.id);
@@ -91,17 +100,15 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public boolean checkNearbyCapital(){
 
-		boolean r = false;
+		boolean capitalNearby = false;
 
 		for (Hexagon neighbor : this.neighbors){
 			if(neighbor.isContainCapital()){
-				r = true;
-				System.out.println("CAPITAAAAL");
-			}else{
-				System.out.println("PAS CAPITAL");
+				capitalNearby = true;
+				//System.out.println("CAPITAAAAL");
 			}
 		}
-		return r;
+		return capitalNearby;
 	}
 
 	public void placeUnit(){
@@ -110,6 +117,7 @@ public class Hexagon extends JButton implements MouseListener {
 			System.out.println("Ajout d'une nouvelle unité.");
 			Interface.setMessage("Unité placé !");
 			this.unit = new Unit(this);
+			Interface.setWantPlaceUnit(false);
 			Grid.getCapitalJoueur().setCurrentGold(Grid.getCapitalJoueur().getCurrentGold() - Unit.getGoldCost());
 		}else{
 			System.out.println("Impossible de placer une unité loin de la capital !");
@@ -120,15 +128,7 @@ public class Hexagon extends JButton implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("X : " + this.posX);
-		System.out.println("Y : " + this.posY);
-		System.out.println("Id : " + this.id);
-
-		/*System.out.println("Voisin début");
-		for(int i = 0; i<this.getNeighbors().size(); i++){
-			System.out.println(this.getNeighbors().get(i).getId());
-		}
-		System.out.println("Voisin fin");*/
+		System.out.println("Id : " + this.id + " X : " + this.posX + " Y : " + this.posY);
 
 		//Placement unité
 		if (Interface.wantPlaceUnit() && Grid.getCapitalJoueur().getCurrentGold() >= Unit.getGoldCost()) {
@@ -140,76 +140,61 @@ public class Hexagon extends JButton implements MouseListener {
 				this.placeUnit();
 			}
 
-		} else {
+		}else{
 
 			if (this.unit != null){
 
-				if(!Interface.isWantDeplace()) {
+				//L'unité ne veut pas encore se déplacer
+				if(!this.unit.isWantMove()) {
 
-					// if(!this.active) {
+					//L'unite veut se déplacer
+					this.unit.setWantMove(true);
+					//this.active = true;
+					//Interface.setWantDeplace(true);
+					Grid.getCapitalJoueur().setUnitToDeplace(this.unit);
+					System.out.println(Grid.getCapitalJoueur().getUnitToDeplace());
 
-						//L'unite veut se déplacer
-						//this.unit.setWantMove(true);
-						//this.active = true;
-						Interface.setWantDeplace(true);
-						Interface.setUnitWantDeplace(this.unit);
+					System.out.println("Le joueur souhaite déplacer une unité !");
+					Interface.setMessage("Le joueur souhaite déplacer une unité !");
+					Grid.getCapitalJoueur().getUnitToDeplace().calculDistance();
 
-						System.out.println("Le joueur souhaite déplacer une unité !");
-						Interface.setMessage("Le joueur souhaite déplacer une unité !");
-						/*for (Hexagon neighbor : this.neighbors) {
-
-							if (neighbor.isContainCapital()) {
-
-								if (neighbor.getCapital().getId() == 1) {
-									neighbor.setTexture(new Texture("voisin_joueur"));
-								} else {
-									neighbor.setTexture(new Texture("voisin_ia"));
-								}
-
-							} else {
-								neighbor.setTexture(new Texture("voisin"));
-
-							}
-
-						}*/
-
-					//}
-
-				}else{
-
-					//L'unité ne veut plus se déplacer
-					//this.active = false;
-					//this.unit.setWantMove(false);
-					Interface.setWantDeplace(false);
-					System.out.println("Le joueur ne souhaite plus déplacer d' unité !");
-					Interface.setMessage("Le joueur ne souhaite plus déplacer d'unité !");
-					Interface.setUnitWantDeplace(null);
 					/*for (Hexagon neighbor : this.neighbors) {
-
 						if (neighbor.isContainCapital()) {
 							if (neighbor.getCapital().getId() == 1) {
-								neighbor.setTexture(new Texture("capital_joueur"));
+								neighbor.setTexture(new Texture("voisin_joueur"));
 							} else {
-								neighbor.setTexture(new Texture("capital_ia"));
+								neighbor.setTexture(new Texture("voisin_ia"));
 							}
 						} else {
-							neighbor.setTexture(new Texture("grass"));
-
+							neighbor.setTexture(new Texture("voisin"));
 						}
 					}*/
+
+				//L'unité veut
+				}else{
+
+					if(this.unit == Grid.getCapitalIa().getUnitToDeplace()){
+						this.unit.setWantMove(false);
+						System.out.println("Le joueur ne souhaite plus déplacer d' unité !");
+						Interface.setMessage("Le joueur ne souhaite plus déplacer d'unité !");
+						Grid.getCapitalJoueur().setUnitToDeplace(null);
+					}else{
+						System.out.println("Il y à déjà une unité sur cet hexagon !");
+					}
 				}
-			}else {
-				if (Interface.isWantDeplace() && !this.isContainCapital()) {
-					Hexagon lastHexagon = Interface.getUnitWantDeplace().getHexagon();
+
+			}else{
+
+				System.out.println("Unité : " + Grid.getCapitalJoueur().getUnitToDeplace());
+
+				if (Grid.getCapitalJoueur().getUnitToDeplace() != null && !this.isContainCapital()) {
+
+					Hexagon startHexagon = Grid.getCapitalJoueur().getUnitToDeplace().getHexagon();
 					Interface.setMessage("Id de la destination : " + this.getId());
-					Interface.getUnitWantDeplace().move(this);
-					this.setUnit(Interface.getUnitWantDeplace());
-					lastHexagon.setUnit(null);
-					Interface.setWantDeplace(false);
-					Interface.setUnitWantDeplace(null);
-					System.out.println("Fin du déplacement  !");
-					Interface.setMessage("Fin du déplacement !");
+					//System.out.println("Fin du déplacement  !");
+					//Interface.setMessage("Fin du déplacement !");
 				}
+
 			}
 
 		}
@@ -272,5 +257,29 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public Texture getTextureBase() {
+		return textureBase;
+	}
+
+	public void setTextureBase(Texture textureBase) {
+		this.textureBase = textureBase;
+	}
+
+	public boolean isView() {
+		return view;
+	}
+
+	public void setView(boolean view) {
+		this.view = view;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public void setDistance(int distance) {
+		this.distance = distance;
 	}
 }

@@ -13,7 +13,19 @@ public class Capital {
     private ArrayList<Unit> unitCollection;
     private Texture texture;
 
-    public Capital(int id) {
+    /**
+     * Détermine l'unité que je veut
+     */
+    private static Unit unitToDeplace;
+
+    /**
+     * Détermine si le joueur est une IA ou non
+     */
+    private boolean isIA;
+
+
+
+    public Capital(int id, boolean p_isIA) {
         this.id = id;
         this.health = 150;
         currentGold = 0;
@@ -21,6 +33,11 @@ public class Capital {
         this.goldPerSec = 2;
         this.level = 1;
         this.unitCollection = new ArrayList<Unit>();
+        this.isIA = p_isIA;
+    }
+
+    public static void setUnitToDeplace(Unit unitToDeplace) {
+        Capital.unitToDeplace = unitToDeplace;
     }
 
     public ArrayList<Unit> getUnitCollection() {
@@ -76,8 +93,8 @@ public class Capital {
     }
 
     public void addCurrentGold(int gold){
-        if(this.currentGold < this.maxGold)
-            this.currentGold += gold;
+        if(currentGold < this.maxGold)
+            currentGold += gold;
     }
 
     public int getGoldPerSec() {
@@ -94,5 +111,17 @@ public class Capital {
 
     public void setMaxGold(int maxGold) {
         this.maxGold = maxGold;
+    }
+
+    public Unit getUnitToDeplace() {
+        return unitToDeplace;
+    }
+
+    public boolean isIA() {
+        return isIA;
+    }
+
+    public void setIA(boolean IA) {
+        isIA = IA;
     }
 }
