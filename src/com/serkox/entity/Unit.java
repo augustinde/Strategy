@@ -1,5 +1,6 @@
 package com.serkox.entity;
 
+import javax.swing.*;
 import java.util.*;
 
 public class Unit {
@@ -14,16 +15,22 @@ public class Unit {
     private boolean wantMove;
     private List<Hexagon> path;
     private int radius;
+    private boolean deplace;
+    private int priorityLevel;
+    private List<Hexagon> scope;
 
     public Unit(Hexagon p_hexagon){
         this.damage = 15;
         this.health = 50;
-        goldCost = 10;
+        goldCost = 100;
         this.speed = 1;
         this.level = 1;
         this.hexagon = p_hexagon;
         this.path = new ArrayList<Hexagon>();
-        this.radius = 20;
+        this.radius = 3;
+        this.deplace = false;
+        this.priorityLevel = 10;
+        this.scope = new ArrayList<Hexagon>();
     }
 
     public int getLevel() {
@@ -74,15 +81,59 @@ public class Unit {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-               for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                   Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().get(i));
-                   Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
-                   try {
-                       Thread.sleep(675);
-                   } catch (InterruptedException e) {
-                       e.printStackTrace();
-                   }
-               }
+                for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                    Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().get(i));
+                    Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
+                    try {
+                        Thread.sleep(675);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Grid.getCapitalJoueur().getUnitToDeplace().setDeplace(false);
+                Grid.getCapitalJoueur().getUnitToDeplace().setWantMove(false);
+                Grid.getCapitalJoueur().setUnitToDeplace(null);
+            }
+        });
+        thread.start();
+    }
+
+    public void moveToDestinationIa(Hexagon p_hexagon){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                    Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().get(i));
+                    Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+                    try {
+                        Thread.sleep(675);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Grid.getCapitalIa().setUnitToDeplace(null);
+            }
+        });
+        thread.start();
+
+    }
+
+    public void moveToDestinationPriorityHexagonIa(Hexagon p_hexagon){
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                    Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().get(i));
+                    Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+                    try {
+                        Thread.sleep(675);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         });
         thread.start();
@@ -92,7 +143,35 @@ public class Unit {
     public void move(Hexagon p_hexagon){
         Hexagon hexagonDestination = p_hexagon;
 
-        if(hexagonDestination.getDistance() <= this.radius && hexagonDestination.getUnit() == null && hexagonDestination.getDistance() != 0){
+        if(hexagonDestination.getDistancePlayer() <= this.radius && hexagonDestination.getUnit() == null && hexagonDestination.getDistancePlayer() != 0){
+
+            Hexagon hexagonDepart = getHexagon();
+            hexagonDepart.setUnit(null);
+
+            setHexagon(hexagonDestination);
+            hexagonDestination.setUnit(this);
+
+        }
+    }
+
+    public void moveIa(Hexagon p_hexagon){
+        Hexagon hexagonDestination = p_hexagon;
+
+        if(hexagonDestination.getDistanceIa() <= this.radius && hexagonDestination.getUnit() == null && hexagonDestination.getDistanceIa() != 0){
+
+            Hexagon hexagonDepart = getHexagon();
+            hexagonDepart.setUnit(null);
+
+            setHexagon(hexagonDestination);
+            hexagonDestination.setUnit(this);
+
+        }
+    }
+
+    public void moveToPriorityHexagonIa(Hexagon p_hexagon){
+        Hexagon hexagonDestination = p_hexagon;
+
+        if(hexagonDestination.getDistancePriorityHexagon() <= this.radius && hexagonDestination.getUnit() == null && hexagonDestination.getDistancePriorityHexagon() != 0){
 
             Hexagon hexagonDepart = getHexagon();
             hexagonDepart.setUnit(null);
@@ -111,14 +190,12 @@ public class Unit {
      * Calcul de la distance par rapport aux hexagons
      */
     public void calculDistance(){
-
-        Grid.resetTextureHexagons();
         Grid.resetViewHexagons();
 
-        Hexagon hexagonDepart = this.getHexagon();
+        Hexagon hexagonDepart = getHexagon();
 
-        hexagonDepart.setView(true);
-        hexagonDepart.setDistance(0);
+        hexagonDepart.setViewPlayer(true);
+        hexagonDepart.setDistancePlayer(0);
 
         List<Hexagon> file = new ArrayList<Hexagon>();
         file.add(hexagonDepart);
@@ -131,39 +208,126 @@ public class Unit {
             for (Hexagon neighbor : neighbors) {
 
                 if (neighbor != null) {
-                    if (!neighbor.isView() && !neighbor.isObstacle() && !neighbor.isContainCapital()) {
-                        neighbor.setView(true);
-                        neighbor.setDistance(hexagon.getDistance() + 1);
-                        System.out.println(neighbor.getId() + " : " + neighbor.getDistance());
+                    if (!neighbor.getViewPlayer() && !neighbor.isObstacle() && !neighbor.isContainCapital() && neighbor.getUnit() == null) {
+                        neighbor.setViewPlayer(true);
+                        neighbor.setDistancePlayer(hexagon.getDistancePlayer() + 1);
                         file.add(neighbor);
+                    }else{
+                        System.out.println("NOOOOOOO");
+                    }
+
+                }else{
+                    System.out.println("NO");
+                }
+            }
+            file.remove(0);
+        }
+    }
+
+    //Calcul la distance pour l'unité de l'IA
+    public int calculDistanceUnitIa(){
+
+        Grid.resetViewIaHexagons();
+
+        Hexagon hexagonDepart = this.getHexagon();
+
+        hexagonDepart.setViewIa(true);
+        hexagonDepart.setDistanceIa(0);
+
+        List<Hexagon> file = new ArrayList<Hexagon>();
+        file.add(hexagonDepart);
+
+        while (file.size() != 0){
+
+            Hexagon hexagon = file.get(0);
+            List<Hexagon> neighbors = hexagon.getNeighbors();
+
+            for (Hexagon neighbor : neighbors) {
+
+                if (neighbor != null) {
+                    if (!neighbor.getViewIa() && !neighbor.isObstacle() && !neighbor.isContainCapital() && neighbor.getUnit() == null) {
+                        neighbor.setViewIa(true);
+                        neighbor.setDistanceIa(hexagon.getDistanceIa() + 1);
+                        file.add(neighbor);
+
+                        //Si l'hexagon courant est à distance il est ajouté au scope de l'unité
+                        if(neighbor.getDistanceIa() <= this.radius){
+                            this.scope.add(neighbor);
+                        }
+                    }
+
+                }
+            }
+            file.remove(0);
+        }
+
+        //System.out.println("Nb d'hexagons possible : " + this.scope.size());
+        return this.scope.size();
+    }
+
+    //Calcul de la distance entre l'unité et l'hexagon prioritaire de l'IA
+    public void calculDistanceBetweenUnitAndHexagonPriorityIa(){
+
+        Grid.resetViewPriorityHexagons();
+
+        Hexagon hexagonDepart = this.getHexagon();
+
+        hexagonDepart.setViewPriorityHexagon(true);
+        hexagonDepart.setDistancePriorityHexagon(0);
+
+        List<Hexagon> file = new ArrayList<Hexagon>();
+        file.add(hexagonDepart);
+
+        while (file.size() != 0){
+
+            Hexagon hexagon = file.get(0);
+            List<Hexagon> neighbors = hexagon.getNeighbors();
+
+            for (Hexagon neighbor : neighbors) {
+
+                if (neighbor != null) {
+                    if (!neighbor.getViewPriorityHexagon() && !neighbor.isObstacle() && !neighbor.isContainCapital()) {
+                        /**
+                         * L'unité appartient au joueur
+                         */
+                        if(neighbor.getUnit() == null || (neighbor.getUnit() != null && Grid.getCapitalJoueur().getUnitCollection().contains(neighbor.getUnit()))){
+
+                            neighbor.setViewPriorityHexagon(true);
+                            neighbor.setDistancePriorityHexagon(hexagon.getDistancePriorityHexagon() + 1);
+                            file.add(neighbor);
+                            System.out.println("d : " + neighbor.getDistancePriorityHexagon());
+                        }
                     }
                 }
             }
             file.remove(0);
-
         }
 
     }
 
+
+    //Path pour unité joueur
     public void path(Hexagon p_hexagon){
         if(this.path.size() != 0){
             resetPath();
         }
 
-        Hexagon currentHexagon = getHexagon();
+        Hexagon currentHexagon = this.getHexagon();
         Hexagon hexagonDestination = p_hexagon;
 
         this.path.add(hexagonDestination);
 
-        while (hexagonDestination.getDistance() != currentHexagon.getDistance()){
+        while (hexagonDestination.getDistancePlayer() != currentHexagon.getDistancePlayer()){
 
-            int distanceDestination = hexagonDestination.getDistance();
+            int distanceDestination = hexagonDestination.getDistancePlayer();
 
-            for(Hexagon neighbors : hexagonDestination.getNeighbors()){
-                if(neighbors != null){
-                    if(neighbors.getDistance() == (distanceDestination-1) && hexagonDestination.getUnit() == null) {
-                        this.path.add(neighbors);
-                        hexagonDestination = neighbors;
+            for(Hexagon neighbor : hexagonDestination.getNeighbors()){
+
+                if(neighbor != null){
+
+                    if(neighbor.getDistancePlayer() == (distanceDestination-1) && hexagonDestination.getUnit() == null) {
+                        this.path.add(neighbor);
+                        hexagonDestination = neighbor;
                         break;
                     }
                 }
@@ -172,12 +336,80 @@ public class Unit {
         }
 
         this.path.remove(path.size()-1);
-        System.out.println(this.path.size());
+
         if(this.path.size() <= this.radius){
             for(Hexagon hexagonPath : this.path){
                 hexagonPath.setTexture(Grid.getGrass_path());
             }
         }
+    }
+
+    //Path pour unité IA
+    public void pathIa(Hexagon p_hexagon){
+        if(this.path.size() != 0){
+            this.path.clear();
+        }
+
+        Hexagon currentHexagon = getHexagon();
+        Hexagon hexagonDestination = p_hexagon;
+
+        this.path.add(hexagonDestination);
+
+        while (hexagonDestination.getDistanceIa() != currentHexagon.getDistanceIa()){
+
+            int distanceDestination = hexagonDestination.getDistanceIa();
+
+            for(Hexagon neighbor : hexagonDestination.getNeighbors()){
+                if(neighbor != null){
+                    if(neighbor.getDistanceIa() == (distanceDestination-1) && hexagonDestination.getUnit() == null) {
+                        this.path.add(neighbor);
+                        hexagonDestination = neighbor;
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        //System.out.println(this.path.size());
+
+        this.path.remove(path.size()-1);
+
+    }
+
+    //Path pour unité IA vers l'hexagon prioritaire
+    public void pathToHexagonPriorityIa(Hexagon p_hexagon){
+        if(this.path.size() != 0){
+            this.path.clear();
+        }
+
+        Hexagon currentHexagon = this.getHexagon();
+        Hexagon hexagonDestination = p_hexagon;
+       // System.out.println("Hexa current : " + currentHexagon.getId() + " Hexa destination : " + hexagonDestination.getId());
+        this.path.add(hexagonDestination);
+
+        while (hexagonDestination.getDistancePriorityHexagon() != currentHexagon.getDistancePriorityHexagon()){
+
+            int distanceDestination = hexagonDestination.getDistancePriorityHexagon();
+
+            for(Hexagon neighbor : hexagonDestination.getNeighbors()){
+
+                if(neighbor != null){
+                    //System.out.println("Hexa : " + neighbor.getId() + " Distance : " + neighbor.getDistancePriorityHexagon());
+
+                    if(neighbor.getDistancePriorityHexagon() == (distanceDestination-1) && (hexagonDestination.getUnit() == null || (hexagonDestination.getUnit() != null && Grid.getCapitalJoueur().getUnitCollection().contains(hexagonDestination.getUnit())))) {
+                        this.path.add(neighbor);
+                        hexagonDestination = neighbor;
+                        break;
+                    }
+
+                }
+            }
+
+        }
+
+        this.path.remove(path.size()-1);
+
     }
 
     public void resetPath(){
@@ -215,5 +447,29 @@ public class Unit {
 
     public void setRadius(int radius) {
         this.radius = radius;
+    }
+
+    public boolean isDeplace() {
+        return deplace;
+    }
+
+    public void setDeplace(boolean deplace) {
+        this.deplace = deplace;
+    }
+
+    public int getPriorityLevel() {
+        return priorityLevel;
+    }
+
+    public void setPriorityLevel(int priorityLevel) {
+        this.priorityLevel = priorityLevel;
+    }
+
+    public List<Hexagon> getScope() {
+        return scope;
+    }
+
+    public void setScope(List<Hexagon> scope) {
+        this.scope = scope;
     }
 }

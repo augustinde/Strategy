@@ -18,9 +18,33 @@ public class Hexagon extends JButton implements MouseListener {
 	private Unit unit;
 	private ArrayList<Hexagon> neighbors;
 	private Capital capital;
+	private int priority;
 
-	private boolean view;
-	private int distance = 0;
+	private int distancePlayer;
+	private boolean viewPlayer;
+
+	/*
+
+		arrayDistance[0] = distance pour le joueur
+		arrayDistance[1] = distance pour l'ia
+		arrayDistance[2] = distance pour le radius (uniquement pour capital)
+		arrayDistance[3] = distance pour par rapport a l'hexagon prioritaire
+
+	 */
+	private final int[] arrayDistance = new int[4];
+
+	/*
+
+		arrayView[0] = vue pour le joueur
+		arrayView[1] = vue pour l'ia
+		arrayView[2] = vue pour le radius (uniquement pour capital)
+		arrayView[3] = vue pour l'hexagon prioritaire
+
+	 */
+	private final boolean[] arrayView = new boolean[4];
+
+	private int distanceBetweenCapitalJoueur = 0;
+	private int distanceBetweenCapitalIa = 0;
 
 	/**
 	 * Détermine si l'hexagon est cliqué ou non
@@ -28,7 +52,6 @@ public class Hexagon extends JButton implements MouseListener {
 	private boolean active;
 
 	public Hexagon(int p_Id) {
-		this.view = false;
 		this.id = p_Id;
 		this.active = false;
 		//System.out.println(this.id);
@@ -40,6 +63,8 @@ public class Hexagon extends JButton implements MouseListener {
 		this.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		neighbors = new ArrayList<Hexagon>();
 		addMouseListener(this);
+		this.priority = 10;
+		this.viewPlayer = false;
 	}
 
 	public int getPosX() {
@@ -103,9 +128,10 @@ public class Hexagon extends JButton implements MouseListener {
 		boolean capitalNearby = false;
 
 		for (Hexagon neighbor : this.neighbors){
-			if(neighbor.isContainCapital()){
+			if (neighbor.isContainCapital()) {
 				capitalNearby = true;
 				//System.out.println("CAPITAAAAL");
+				break;
 			}
 		}
 		return capitalNearby;
@@ -113,12 +139,15 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public void placeUnit(){
 
-		if(this.checkNearbyCapital()){
+		//if(this.checkNearbyCapital()){
+		if(true){
 			System.out.println("Ajout d'une nouvelle unité.");
 			Interface.setMessage("Unité placé !");
 			this.unit = new Unit(this);
-			Interface.setWantPlaceUnit(false);
 			Grid.getCapitalJoueur().setCurrentGold(Grid.getCapitalJoueur().getCurrentGold() - Unit.getGoldCost());
+			Grid.getCapitalJoueur().addUnit(this.unit);
+			Interface.setWantPlaceUnit(false);
+
 		}else{
 			System.out.println("Impossible de placer une unité loin de la capital !");
 			Interface.setMessage("Impossible de placer une unité loin de la capital !");
@@ -131,7 +160,9 @@ public class Hexagon extends JButton implements MouseListener {
 		System.out.println("Id : " + this.id + " X : " + this.posX + " Y : " + this.posY);
 
 		//Placement unité
-		if (Interface.wantPlaceUnit() && Grid.getCapitalJoueur().getCurrentGold() >= Unit.getGoldCost()) {
+		System.out.println("interface : " + Interface.wantPlaceUnit());
+
+		if (Interface.wantPlaceUnit() && Grid.getCapitalJoueur().getCurrentGold() >= Player.getUnitGoldCost()) {
 			if (this.unit != null){
 				System.out.println("Il y a déjà une unité sur cet hexagone !");
 				Interface.setMessage("Il y a déjà une unité sur cet hexagone !");
@@ -142,9 +173,9 @@ public class Hexagon extends JButton implements MouseListener {
 
 		}else{
 
-			if (this.unit != null){
+			if (this.unit != null && Grid.getCapitalJoueur().getUnitToDeplace() == null && Grid.getCapitalJoueur().getUnitCollection().contains(this.unit)){
 
-				//L'unité ne veut pas encore se déplacer
+				//Clique sur l'unité pour dire qu'on veut la déplacer
 				if(!this.unit.isWantMove()) {
 
 					//L'unite veut se déplacer
@@ -156,10 +187,10 @@ public class Hexagon extends JButton implements MouseListener {
 					Interface.setMessage("Le joueur souhaite déplacer une unité !");
 					Grid.getCapitalJoueur().getUnitToDeplace().calculDistance();
 
-				//L'unité veut
 				}else{
 
-					if(this.unit == Grid.getCapitalIa().getUnitToDeplace()){
+					//Ne souhaite plus déplacer l'unité
+					if(this.unit == Grid.getCapitalJoueur().getUnitToDeplace()){
 						this.unit.setWantMove(false);
 						System.out.println("Le joueur ne souhaite plus déplacer d' unité !");
 						Interface.setMessage("Le joueur ne souhaite plus déplacer d'unité !");
@@ -167,19 +198,22 @@ public class Hexagon extends JButton implements MouseListener {
 					}else{
 						System.out.println("Il y à déjà une unité sur cet hexagon !");
 					}
+
 				}
 
 			}else{
 
-				System.out.println("Unité : " + Grid.getCapitalJoueur().getUnitToDeplace());
-
+				//Clique sur l'hexagone de destination => déplacement
 				if (Grid.getCapitalJoueur().getUnitToDeplace() != null && !this.isContainCapital()) {
 
-					Hexagon startHexagon = Grid.getCapitalJoueur().getUnitToDeplace().getHexagon();
-					Interface.setMessage("Id de la destination : " + this.getId());
+					Grid.getCapitalJoueur().getUnitToDeplace().setDeplace(true);
 					Grid.getCapitalJoueur().getUnitToDeplace().moveToDestination(this);
-					//System.out.println("Fin du déplacement  !");
-					//Interface.setMessage("Fin du déplacement !");
+
+					System.out.println("Fin du déplacement  !");
+					Interface.setMessage("Fin du déplacement !");
+					Grid.resetTextureHexagons();
+					Grid.resetViewHexagons();
+
 				}
 
 			}
@@ -202,14 +236,11 @@ public class Hexagon extends JButton implements MouseListener {
 	public void mouseEntered(MouseEvent e) {
 
 		if(Grid.getCapitalJoueur().getUnitToDeplace() != null && Grid.getCapitalJoueur().getUnitToDeplace().isWantMove() && this.getUnit() == null && !this.isContainCapital()){
-			Grid.getCapitalJoueur().getUnitToDeplace().path(this);
+			if(!Grid.getCapitalJoueur().getUnitToDeplace().isDeplace()){
+				Grid.getCapitalJoueur().getUnitToDeplace().path(this);
+			}
 		}
-		/*for (Hexagon neighbor : this.neighbors){
 
-			neighbor.setTexture(new Texture("voisin"));
-
-		}
-		*/
 	}
 
 	@Override
@@ -258,19 +289,115 @@ public class Hexagon extends JButton implements MouseListener {
 		this.textureBase = textureBase;
 	}
 
-	public boolean isView() {
-		return view;
+	public int getDistanceBetweenCapitalIa() {
+		return distanceBetweenCapitalIa;
 	}
 
-	public void setView(boolean view) {
-		this.view = view;
+	public void setDistanceBetweenCapitalIa(int distanceBetweenCapitalIa) {
+		this.distanceBetweenCapitalIa = distanceBetweenCapitalIa;
 	}
 
-	public int getDistance() {
-		return distance;
+	public int getDistanceBetweenCapitalJoueur() {
+		return distanceBetweenCapitalJoueur;
 	}
 
-	public void setDistance(int distance) {
-		this.distance = distance;
+	public void setDistanceBetweenCapitalJoueur(int distanceBetweenCapitalJoueur) {
+		this.distanceBetweenCapitalJoueur = distanceBetweenCapitalJoueur;
+	}
+
+	public int[] getArrayDistance() {
+		return arrayDistance;
+	}
+
+	public boolean[] getArrayView() {
+		return arrayView;
+	}
+
+	/*public int getDistancePlayer(){
+		return this.arrayDistance[0];
+	}*/
+
+	public int getDistanceIa(){
+		return this.arrayDistance[1];
+	}
+
+	public int getDistanceRadius(){
+		return this.arrayDistance[2];
+	}
+
+	public int getDistancePriorityHexagon(){
+		return this.arrayDistance[3];
+	}
+
+	/*public boolean getViewPlayer(){
+		return this.arrayView[0];
+	}*/
+
+	public boolean getViewIa(){
+		return this.arrayView[1];
+	}
+
+	public boolean getViewRadius(){
+		return this.arrayView[2];
+	}
+
+	public boolean getViewPriorityHexagon(){
+		return this.arrayView[3];
+	}
+
+	/*public void setViewPlayer(boolean param){
+		this.arrayView[0] = param;
+	}*/
+
+	public void setViewIa(boolean param){
+		this.arrayView[1] = param;
+	}
+
+	public void setViewRadius(boolean param){
+		this.arrayView[2] = param;
+	}
+
+	public void setViewPriorityHexagon(boolean param){
+		this.arrayView[3] = param;
+	}
+
+	/*public void setDistancePlayer(int param){
+		this.arrayDistance[0] = param;
+	}*/
+
+	public void setDistanceIa(int param){
+		this.arrayDistance[1] = param;
+	}
+
+	public void setDistanceRadius(int param){
+		this.arrayDistance[2] = param;
+	}
+
+	public void setDistancePriorityHexagon(int param){
+		this.arrayDistance[3] = param;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public int getDistancePlayer() {
+		return distancePlayer;
+	}
+
+	public void setDistancePlayer(int distancePlayer) {
+		this.distancePlayer = distancePlayer;
+	}
+
+	public boolean getViewPlayer() {
+		return this.viewPlayer;
+	}
+
+	public void setViewPlayer(boolean viewPlayer) {
+		this.viewPlayer = viewPlayer;
 	}
 }

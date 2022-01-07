@@ -17,8 +17,8 @@ public class Grid extends JPanel {
     private final Texture textureCapitalJoueur;
     private final Texture infantry;
 
-    private static Capital capitalJoueur;
-    private static Capital capitalIa;
+    private static Player capitalJoueur;
+    private static PNJ capitalIa;
 
     private final int[][] map = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -32,7 +32,6 @@ public class Grid extends JPanel {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
     };
-
 
     public Grid(){
         super();
@@ -48,12 +47,14 @@ public class Grid extends JPanel {
         this.textureCapitalIa = new Texture("capital_ia");
         this.textureCapitalJoueur = new Texture("capital_joueur");
         this.infantry = new Texture("infantry");
-        capitalJoueur = new Capital(1, false);
-        capitalIa = new Capital(2, false);
+        capitalJoueur = new Player(1);
+        capitalIa = new PNJ(2);
         createGrid();
         System.out.println(hexagons.size());
         hexagons.forEach(this::add);
         addNeighbors();
+        calculDistanceBetweenHexagonAndCapitalPlayer();
+        calculDistanceBetweenHexagonAndCapitalIa();
     }
 
     public static Texture getGrass_path() {
@@ -124,12 +125,14 @@ public class Grid extends JPanel {
                     hexagon.setTexture(this.textureCapitalJoueur);
                     hexagon.setTextureBase(this.textureCapitalJoueur);
                     hexagon.setCapital(capitalJoueur);
+                    Grid.getCapitalJoueur().setHexagon(hexagon);
                 }else if(this.map[i][j] == 20){
                     hexagon.setObstacle(false);
                     hexagon.setContainCapital(true);
                     hexagon.setTexture(this.textureCapitalIa);
                     hexagon.setTextureBase(this.textureCapitalIa);
                     hexagon.setCapital(capitalIa);
+                    Grid.getCapitalIa().setHexagon(hexagon);
                 }else{
                     hexagon.setObstacle(true);
                     hexagon.setTexture(this.grass);
@@ -137,11 +140,11 @@ public class Grid extends JPanel {
                 }
 
                 hexagons.add(hexagon);
-                System.out.println("X : " + hexagon.getPosX() + " Y : " + hexagon.getPosY());
+                //System.out.println("X : " + hexagon.getPosX() + " Y : " + hexagon.getPosY());
             }
         }
 
-        System.out.println("Hexagon : " + hexagons.size());
+        //System.out.println("Hexagon : " + hexagons.size());
         System.out.println("Grille créé !");
     }
 
@@ -177,22 +180,30 @@ public class Grid extends JPanel {
                     //Affichage des unités
                     if(hexagon.getUnit() != null) {
                         g2d.drawImage(this.infantry.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+                        g2d.setColor(Color.red);
+
+                        g2d.drawString(String.valueOf(hexagon.getUnit().getId()), hexagon.getPosX()+40, hexagon.getPosY()+60);
+                        g2d.setColor(Color.black);
+
                     }
                 }else {
                     g2d.drawImage(this.grass_dark.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
                 }
                 g2d.setFont(new Font("default", Font.BOLD, 16));
-                g2d.drawString(String.valueOf(hexagon.getId() + " " + hexagon.getDistance()), hexagon.getPosX()+40, hexagon.getPosY()+40);
+                g2d.drawString(String.valueOf(hexagon.getId() + " " + hexagon.getDistancePlayer()), hexagon.getPosX()+40, hexagon.getPosY()+40);
+                //g2d.drawString(String.valueOf(hexagon.getDistanceIa()), hexagon.getPosX()+40, hexagon.getPosY()+80);
+                //g2d.drawString(String.valueOf(hexagon.getDistanceBetweenCapitalJoueur() + " " + hexagon.getDistanceBetweenCapitalIa()), hexagon.getPosX()+40, hexagon.getPosY()+80);
+                g2d.drawString(String.valueOf("prio " + hexagon.getDistancePriorityHexagon()), hexagon.getPosX()+40, hexagon.getPosY()+80);
             }
         }
 
     }
 
-    public static Capital getCapitalJoueur() {
+    public static Player getCapitalJoueur() {
         return capitalJoueur;
     }
 
-    public static Capital getCapitalIa() {
+    public static PNJ getCapitalIa() {
         return capitalIa;
     }
 
@@ -202,9 +213,27 @@ public class Grid extends JPanel {
         }
     }
 
+    public static void resetViewIaHexagons() {
+        for(Hexagon hexagon : hexagons){
+            hexagon.setViewIa(false);
+        }
+    }
+
     public static void resetViewHexagons(){
         for(Hexagon hexagon : hexagons){
-            hexagon.setView(false);
+            hexagon.setViewPlayer(false);
+        }
+    }
+
+    public static void resetViewRadiusHexagons(){
+        for(Hexagon hexagon : hexagons){
+            hexagon.setViewRadius(false);
+        }
+    }
+
+    public static void resetViewPriorityHexagons(){
+        for(Hexagon hexagon : hexagons){
+            hexagon.setViewPriorityHexagon(false);
         }
     }
 
@@ -282,5 +311,68 @@ public class Grid extends JPanel {
 
         }
 
+    }
+
+    public void calculDistanceBetweenHexagonAndCapitalIa(){
+
+        Hexagon hexagonDepart = Grid.getCapitalIa().getHexagon();
+
+        hexagonDepart.setViewIa(true);
+        hexagonDepart.setDistanceBetweenCapitalIa(0);
+
+        List<Hexagon> file = new ArrayList<Hexagon>();
+        file.add(hexagonDepart);
+
+        while (file.size() != 0){
+
+            Hexagon hexagon = file.get(0);
+            List<Hexagon> neighbors = hexagon.getNeighbors();
+
+            for (Hexagon neighbor : neighbors) {
+
+                if (neighbor != null) {
+                    if (!neighbor.getViewIa() && !neighbor.isObstacle() && !neighbor.isContainCapital() && neighbor.getUnit() == null) {
+                        neighbor.setViewIa(true);
+                        neighbor.setDistanceBetweenCapitalIa(hexagon.getDistanceBetweenCapitalIa() + 1);
+                        //System.out.println(neighbor.getId() + " : " + neighbor.getDistanceBetweenCapitalIa());
+                        file.add(neighbor);
+                    }
+
+                }
+            }
+            file.remove(0);
+        }
+    }
+
+
+    public void calculDistanceBetweenHexagonAndCapitalPlayer(){
+
+        Hexagon hexagonDepart = Grid.getCapitalJoueur().getHexagon();
+
+        hexagonDepart.setViewPlayer(true);
+        hexagonDepart.setDistanceBetweenCapitalJoueur(0);
+
+        List<Hexagon> file = new ArrayList<Hexagon>();
+        file.add(hexagonDepart);
+
+        while (file.size() != 0){
+
+            Hexagon hexagon = file.get(0);
+            List<Hexagon> neighbors = hexagon.getNeighbors();
+
+            for (Hexagon neighbor : neighbors) {
+
+                if (neighbor != null) {
+                    if (!neighbor.getViewPlayer() && !neighbor.isObstacle() && !neighbor.isContainCapital() && neighbor.getUnit() == null) {
+                        neighbor.setViewPlayer(true);
+                        neighbor.setDistanceBetweenCapitalJoueur(hexagon.getDistanceBetweenCapitalJoueur() + 1);
+                        //System.out.println(neighbor.getId() + " : " + neighbor.getDistanceBetweenCapitalJoueur());
+                        file.add(neighbor);
+                    }
+
+                }
+            }
+            file.remove(0);
+        }
     }
 }

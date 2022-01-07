@@ -36,14 +36,19 @@ public class Interface extends JPanel{
         btnBuyUnit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(addUnit) {
-                    System.out.println("Ne souhaite plus placer d'unité.");
-                    Interface.setMessage("Le joueur ne souhaite plus placer d'unité.");
-                    addUnit = false;
+
+                if(Grid.getCapitalJoueur().getUnitToDeplace() == null) {
+                    if (addUnit) {
+                        System.out.println("Ne souhaite plus placer d'unité.");
+                        Interface.setMessage("Le joueur ne souhaite plus placer d'unité.");
+                        addUnit = false;
+                    } else {
+                        System.out.println("Souhaite placer une unité !");
+                        Interface.setMessage("Le joueur souhaite placer une unité.");
+                        addUnit = true;
+                    }
                 }else{
-                    System.out.println("Souhaite placer une unité !");
-                    Interface.setMessage("Le joueur souhaite placer une unité.");
-                    addUnit = true;
+                    System.out.println("salut");
                 }
             }
         });
