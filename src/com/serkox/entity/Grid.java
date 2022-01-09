@@ -17,7 +17,8 @@ public class Grid extends JPanel {
     private final Texture grass_dark;
     private final Texture textureCapitalIa;
     private final Texture textureCapitalJoueur;
-    private final Texture infantry;
+    private final Texture infantry_ia;
+    private final Texture infantry_joueur;
 
     private static Player capitalJoueur;
     private static PNJ capitalIa;
@@ -48,7 +49,8 @@ public class Grid extends JPanel {
         this.water = new Texture("water");
         this.textureCapitalIa = new Texture("capital_ia");
         this.textureCapitalJoueur = new Texture("capital_joueur");
-        this.infantry = new Texture("infantry");
+        this.infantry_ia = new Texture("infia");
+        this.infantry_joueur= new Texture("infj");
         capitalJoueur = new Player(1);
         capitalIa = new PNJ(2);
         createGrid();
@@ -191,7 +193,12 @@ public class Grid extends JPanel {
 
                         //Affichage des unités
                         if (hexagon.getUnit() != null) {
-                            g2d.drawImage(this.infantry.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+                            if(Grid.getCapitalJoueur().getUnitCollection().contains(hexagon.getUnit())){
+                                g2d.drawImage(this.infantry_joueur.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+                            }else{
+                                g2d.drawImage(this.infantry_ia.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+
+                            }
 
                             //g2d.setColor(Color.red);
                             //g2d.drawString(String.valueOf(hexagon.getUnit().getId()), hexagon.getPosX() + 40, hexagon.getPosY() + 60);

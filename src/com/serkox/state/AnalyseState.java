@@ -7,9 +7,9 @@ public class AnalyseState extends State{
     @Override
     public void enter(){
 
-        if(Grid.getCapitalIa().getHealth() > 0 || Grid.getCapitalJoueur().getHealth() > 0) {
+        if(Grid.getCapitalIa().getHealth() > 0 && Grid.getCapitalJoueur().getHealth() > 0) {
             System.out.println("#######");
-            System.out.println("J'analyse la situation ...");
+            System.out.println("J'analyse la situation ..." + Grid.getCapitalIa().getUnitCollection().size());
 
             if (Grid.getCapitalIa().getUnitCollection().size() == 0 || Grid.getCapitalJoueur().getUnitCollection().size() > Grid.getCapitalIa().getUnitCollection().size()) {
 
@@ -24,9 +24,14 @@ public class AnalyseState extends State{
             } else {
                 //VERIFIER UNITE DANS LE RADIUS DE LA CAPITAL SI OUI ON PASSE EN MODE DEFENSIVE
                 if (Grid.getCapitalIa().checkUnitInRadius()) {
-                    Grid.getCapitalIa().setState(new DefensiveState());
+                    if(Grid.getCapitalIa().getHealth() > 0 && Grid.getCapitalIa().getUnitCollection().size() > 0){
+                        Grid.getCapitalIa().setState(new DefensiveState());
+                    }
                 } else {
-                    Grid.getCapitalIa().setState(new OffensiveState());
+                    if(Grid.getCapitalJoueur().getHealth() > 0 && Grid.getCapitalIa().getUnitCollection().size() > 0){
+                        Grid.getCapitalIa().setState(new OffensiveState());
+
+                    }
                 }
             }
         }else{

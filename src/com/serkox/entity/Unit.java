@@ -9,8 +9,8 @@ public class Unit {
     private int damage;
     private int health;
     private static int goldCost;
-    private int level;
-    private int speed;
+    //private int level;
+    //private int speed;
     private Hexagon hexagon;
     private boolean wantMove;
     private List<Hexagon> path;
@@ -23,8 +23,8 @@ public class Unit {
         this.damage = 15;
         this.health = 50;
         goldCost = 100;
-        this.speed = 1;
-        this.level = 1;
+       // this.speed = 1;
+        //this.level = 1;
         this.hexagon = p_hexagon;
         this.path = new ArrayList<Hexagon>();
         this.radius = 3;
@@ -33,7 +33,7 @@ public class Unit {
         this.scope = new ArrayList<Hexagon>();
     }
 
-    public int getLevel() {
+   /* public int getLevel() {
         return level;
     }
 
@@ -47,7 +47,7 @@ public class Unit {
 
     public void setSpeed(int speed) {
         this.speed = speed;
-    }
+    }*/
 
     public static int getGoldCost() {
         return goldCost;
@@ -239,17 +239,17 @@ public class Unit {
         }else{
 
             if(Grid.getCapitalIa().getUnitCollection().contains(hexagon.getUnit())){
-                hexagon.getUnit().setHealth(hexagon.getUnit().getHealth() - Grid.getCapitalIa().getUnitToDeplace().getDamage());
-
-                if(hexagon.getUnit().getHealth() <= 0){
-                    Grid.getCapitalJoueur().getUnitCollection().remove(hexagon.getUnit());
-                    hexagon.setUnit(null);
-                }
-            }else{
                 hexagon.getUnit().setHealth(hexagon.getUnit().getHealth() - Grid.getCapitalJoueur().getUnitToDeplace().getDamage());
 
                 if(hexagon.getUnit().getHealth() <= 0){
                     Grid.getCapitalIa().getUnitCollection().remove(hexagon.getUnit());
+                    hexagon.setUnit(null);
+                }
+            }else{
+                hexagon.getUnit().setHealth(hexagon.getUnit().getHealth() - Grid.getCapitalIa().getUnitToDeplace().getDamage());
+
+                if(hexagon.getUnit().getHealth() <= 0){
+                    Grid.getCapitalJoueur().getUnitCollection().remove(hexagon.getUnit());
                     hexagon.setUnit(null);
                 }
             }

@@ -5,7 +5,7 @@ import com.serkox.entity.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoveUnitAroundCapital extends State{
+public class MoveUnitAroundCapitalState extends State{
 
     @Override
     public void enter(){

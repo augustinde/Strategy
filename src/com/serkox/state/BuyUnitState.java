@@ -23,7 +23,7 @@ public class BuyUnitState extends State{
             Grid.getCapitalIa().placeUnit(this.hexagon);
             Grid.getCapitalIa().setState(new AnalyseState());
         }else{
-            Grid.getCapitalIa().setState(new MoveUnitAroundCapital());
+            Grid.getCapitalIa().setState(new MoveUnitAroundCapitalState());
         }
 
     }

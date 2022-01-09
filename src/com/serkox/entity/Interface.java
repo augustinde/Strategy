@@ -29,7 +29,7 @@ public class Interface extends JPanel{
         //this.texture = new Texture("interface_joueur");
         this.textureGold = new Texture("money");
         this.textureHealth = new Texture("vie");
-        JButton btnBuyUnit = new JButton("Acheter une unité (70)");
+        JButton btnBuyUnit = new JButton("Acheter une unité (100)");
         btnBuyUnit.setBounds(200,10, 150, 30);
         btnBuyUnit.setBorder(null);
         btnBuyUnit.setBackground(new Color(211, 84, 0));

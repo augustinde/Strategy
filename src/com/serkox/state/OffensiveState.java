@@ -8,13 +8,17 @@ public class OffensiveState extends State {
         System.out.println("ATTAQUE CAPITAL");
 
         //Récupérer l'unité la plus éloigné de la capital
-        Grid.getCapitalIa().getUnitFarFromCapital();
-        if(Grid.getCapitalJoueur().getHexagon().getDistanceCapital() == 1){
-            Grid.getCapitalIa().setState(new AttackCapital());
-        }else{
+        if(Grid.getCapitalIa().getUnitCollection().size() > 0) {
+            Grid.getCapitalIa().getUnitFarFromCapital();
+            if (Grid.getCapitalJoueur().getHexagon().getDistanceCapital() == 1) {
+                Grid.getCapitalIa().setState(new AttackCapitalState());
+            } else {
 
-            Grid.getCapitalIa().getUnitToDeplace().pathToCapitalIa(Grid.getCapitalJoueur().getHexagon());
-            Grid.getCapitalIa().getUnitToDeplace().moveToCapitalIa(Grid.getCapitalJoueur().getHexagon());
+                Grid.getCapitalIa().getUnitToDeplace().pathToCapitalIa(Grid.getCapitalJoueur().getHexagon());
+                Grid.getCapitalIa().getUnitToDeplace().moveToCapitalIa(Grid.getCapitalJoueur().getHexagon());
+                Grid.getCapitalIa().setState(new AnalyseState());
+            }
+        }else{
             Grid.getCapitalIa().setState(new AnalyseState());
         }
 

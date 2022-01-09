@@ -2,7 +2,7 @@ package com.serkox.state;
 
 import com.serkox.entity.Grid;
 
-public class AttackCapital extends State {
+public class AttackCapitalState extends State {
 
     @Override
     public void enter() {

@@ -13,7 +13,7 @@ public class DefensiveState extends State {
         Grid.getCapitalIa().getUnitNearbyPriorityHexagon();
 
         if(Grid.getCapitalIa().getHexagonPriority().getDistancePriorityHexagon() == 1){
-            Grid.getCapitalIa().setState(new AttackUnit());
+            Grid.getCapitalIa().setState(new AttackUnitState());
 
         }else{
             Grid.getCapitalIa().getUnitToDeplace().pathToHexagonPriorityIa(Grid.getCapitalIa().getHexagonPriority());
