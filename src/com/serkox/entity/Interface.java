@@ -83,7 +83,7 @@ public class Interface extends JPanel{
         g2d.setColor(Color.white);
 
         g2d.drawImage(this.textureHealth.getTexture(), -20, -15, 100, 100, null);
-        g2d.drawString(String.valueOf(this.health) + "/150", 30, 20);
+        g2d.drawString(String.valueOf(Grid.getCapitalJoueur().getHealth()) + "/150", 30, 20);
 
         g2d.drawImage(this.textureGold.getTexture(), -2, 25, 70, 60, null);
         g2d.drawString(String.valueOf(this.gold) + "/" + String.valueOf(this.maxGold), 30, 45);
@@ -92,7 +92,7 @@ public class Interface extends JPanel{
         g2d.drawString(String.valueOf(this.level), 180, 20);
 
         g2d.drawString("Vie IA :", 1130, 20);
-        g2d.drawString(String.valueOf(this.healthIa) + "/150", 1200, 20);
+        g2d.drawString(String.valueOf(Grid.getCapitalIa().getHealth()) + "/150", 1200, 20);
 
         g2d.drawString(message, 420, 30);
 

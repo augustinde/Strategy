@@ -28,7 +28,7 @@ public class PNJ extends Capital{
                     state.update();
 
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -69,7 +69,8 @@ public class PNJ extends Capital{
             Grid.getCapitalIa().addUnit(unit);
             Grid.getCapitalIa().setCurrentGold(Grid.getCapitalIa().getCurrentGold() - Unit.getGoldCost());
             Grid.getCapitalIa().setUnitToDeplace(unit);
-
+            System.out.println(Grid.getCapitalIa().getUnitToDeplace());
 
     }
+
 }

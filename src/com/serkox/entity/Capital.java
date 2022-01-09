@@ -208,7 +208,7 @@ public abstract class Capital {
         }
 
         if(hexagonPriority.getPriority() > 10){
-            System.out.println("Une unité se trouve prêts de la capital de l'IA");
+            System.out.println("Une unité se trouve prêts de la capital de l'IA : " + hexagonPriority.getId());
             return true;
         }else{
             System.out.println("Aucune unité prêts de la capital de l'IA");
@@ -235,22 +235,38 @@ public abstract class Capital {
 
     public void getUnitNearbyPriorityHexagon(){
 
-        Unit unitNearbyPriorityHexagon;
-
-        unitNearbyPriorityHexagon = this.unitCollection.get(0);
-        unitNearbyPriorityHexagon.calculDistanceBetweenUnitAndHexagonPriorityIa();
+        Unit unitNearbyPriorityHexagon = null;
 
         for(Unit unit : Grid.getCapitalIa().getUnitCollection()){
 
             unit.calculDistanceBetweenUnitAndHexagonPriorityIa();
-            System.out.println("Unite : " + unit.getId() + " Distance : " + unit.getHexagon().getDistancePriorityHexagon());
-            if(unit.getHexagon().getDistancePriorityHexagon() < unitNearbyPriorityHexagon.getHexagon().getDistancePriorityHexagon()){
+
+            //unité courrante  <  unité
+            if(unit.getHexagon().getDistancePriorityHexagon() < Grid.getCapitalIa().getHexagonPriority().getDistancePriorityHexagon()){
                 unitNearbyPriorityHexagon = unit;
             }
 
         }
         Grid.getCapitalIa().setUnitToDeplace(unitNearbyPriorityHexagon);
     }
+
+    public void getUnitFarFromCapital(){
+
+        Unit unitFarFromCapital = Grid.getCapitalIa().getUnitCollection().get(0);
+
+        for(Unit unit : Grid.getCapitalIa().getUnitCollection()){
+
+            unit.calculDistanceBetweenUnitAndHexagonCapitalJoueur();
+
+            if(unit.getHexagon().getDistanceCapital() > unitFarFromCapital.getHexagon().getDistanceCapital()){
+                unitFarFromCapital = unit;
+            }
+        }
+
+        Grid.getCapitalIa().setUnitToDeplace(unitFarFromCapital);
+
+    }
+
 
     protected abstract void setUnitToDeplace(Unit unit);
 

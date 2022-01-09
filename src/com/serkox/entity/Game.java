@@ -12,7 +12,6 @@ public class Game extends JPanel {
         this.setLayout(null);
     }
 
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

@@ -23,6 +23,12 @@ public class Hexagon extends JButton implements MouseListener {
 	private int distancePlayer;
 	private boolean viewPlayer;
 
+	private int distancePriorityHexagon;
+	private boolean viewPriorityHexagon;
+
+	private int distanceCapital;
+	private boolean viewCapital;
+
 	/*
 
 		arrayDistance[0] = distance pour le joueur
@@ -65,6 +71,9 @@ public class Hexagon extends JButton implements MouseListener {
 		addMouseListener(this);
 		this.priority = 10;
 		this.viewPlayer = false;
+		this.viewPriorityHexagon = false;
+		this.distancePriorityHexagon = 99;
+		this.viewCapital = false;
 	}
 
 	public int getPosX() {
@@ -139,8 +148,8 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public void placeUnit(){
 
-		//if(this.checkNearbyCapital()){
-		if(true){
+		if(this.checkNearbyCapital()){
+		//if(true){
 			System.out.println("Ajout d'une nouvelle unité.");
 			Interface.setMessage("Unité placé !");
 			this.unit = new Unit(this);
@@ -157,10 +166,8 @@ public class Hexagon extends JButton implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("Id : " + this.id + " X : " + this.posX + " Y : " + this.posY);
-
+		//System.out.println("Id : " + this.id + " X : " + this.posX + " Y : " + this.posY);
 		//Placement unité
-		System.out.println("interface : " + Interface.wantPlaceUnit());
 
 		if (Interface.wantPlaceUnit() && Grid.getCapitalJoueur().getCurrentGold() >= Player.getUnitGoldCost()) {
 			if (this.unit != null){
@@ -203,6 +210,14 @@ public class Hexagon extends JButton implements MouseListener {
 
 			}else{
 
+				if(this.unit != null && Grid.getCapitalIa().getUnitCollection().contains(this.unit)){
+					Grid.getCapitalJoueur().getUnitToDeplace().attack(this);
+				}
+
+				if(this.containCapital && this.capital == Grid.getCapitalIa()){
+					Grid.getCapitalJoueur().getUnitToDeplace().attack(this);
+				}
+
 				//Clique sur l'hexagone de destination => déplacement
 				if (Grid.getCapitalJoueur().getUnitToDeplace() != null && !this.isContainCapital()) {
 
@@ -213,7 +228,6 @@ public class Hexagon extends JButton implements MouseListener {
 					Interface.setMessage("Fin du déplacement !");
 					Grid.resetTextureHexagons();
 					Grid.resetViewHexagons();
-
 				}
 
 			}
@@ -298,7 +312,7 @@ public class Hexagon extends JButton implements MouseListener {
 	}
 
 	public int getDistanceBetweenCapitalJoueur() {
-		return distanceBetweenCapitalJoueur;
+		return this.distanceBetweenCapitalJoueur;
 	}
 
 	public void setDistanceBetweenCapitalJoueur(int distanceBetweenCapitalJoueur) {
@@ -325,9 +339,6 @@ public class Hexagon extends JButton implements MouseListener {
 		return this.arrayDistance[2];
 	}
 
-	public int getDistancePriorityHexagon(){
-		return this.arrayDistance[3];
-	}
 
 	/*public boolean getViewPlayer(){
 		return this.arrayView[0];
@@ -341,9 +352,6 @@ public class Hexagon extends JButton implements MouseListener {
 		return this.arrayView[2];
 	}
 
-	public boolean getViewPriorityHexagon(){
-		return this.arrayView[3];
-	}
 
 	/*public void setViewPlayer(boolean param){
 		this.arrayView[0] = param;
@@ -357,9 +365,6 @@ public class Hexagon extends JButton implements MouseListener {
 		this.arrayView[2] = param;
 	}
 
-	public void setViewPriorityHexagon(boolean param){
-		this.arrayView[3] = param;
-	}
 
 	/*public void setDistancePlayer(int param){
 		this.arrayDistance[0] = param;
@@ -373,9 +378,6 @@ public class Hexagon extends JButton implements MouseListener {
 		this.arrayDistance[2] = param;
 	}
 
-	public void setDistancePriorityHexagon(int param){
-		this.arrayDistance[3] = param;
-	}
 
 	public int getPriority() {
 		return priority;
@@ -399,5 +401,37 @@ public class Hexagon extends JButton implements MouseListener {
 
 	public void setViewPlayer(boolean viewPlayer) {
 		this.viewPlayer = viewPlayer;
+	}
+
+	public boolean getViewPriorityHexagon() {
+		return viewPriorityHexagon;
+	}
+
+	public void setViewPriorityHexagon(boolean viewPriorityHexagon) {
+		this.viewPriorityHexagon = viewPriorityHexagon;
+	}
+
+	public int getDistancePriorityHexagon() {
+		return distancePriorityHexagon;
+	}
+
+	public void setDistancePriorityHexagon(int distancePriorityHexagon) {
+		this.distancePriorityHexagon = distancePriorityHexagon;
+	}
+
+	public int getDistanceCapital() {
+		return distanceCapital;
+	}
+
+	public void setDistanceCapital(int distanceCapital) {
+		this.distanceCapital = distanceCapital;
+	}
+
+	public boolean getViewCapital() {
+		return viewCapital;
+	}
+
+	public void setViewCapital(boolean viewCapital) {
+		this.viewCapital = viewCapital;
 	}
 }

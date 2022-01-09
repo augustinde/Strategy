@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Grid extends JPanel {
 
+    private static boolean game = true;
+
     private static List<Hexagon> hexagons;
 
     private final Texture grass;
@@ -63,6 +65,14 @@ public class Grid extends JPanel {
 
     public static void setGrass_path(Texture grass_path) {
         Grid.grass_path = grass_path;
+    }
+
+    public static boolean isGame() {
+        return game;
+    }
+
+    public static void setGame(boolean game) {
+        Grid.game = game;
     }
 
     /**
@@ -157,46 +167,54 @@ public class Grid extends JPanel {
     }
 
     protected void paintComponent(Graphics g){
+
         super.paintComponent(g);
         Graphics g2d = g;
-        int cpt = 0;
+        if(game) {
+            int cpt = 0;
 
-        for(int i = 0; i<this.map.length; i++){
+            for (int i = 0; i < this.map.length; i++) {
 
-            for(int j = 0; j<this.map[i].length; j++) {
-                Hexagon hexagon = hexagons.get(cpt);
-                cpt++;
+                for (int j = 0; j < this.map[i].length; j++) {
+                    Hexagon hexagon = hexagons.get(cpt);
+                    cpt++;
 
-                if(this.map[i][j] != 0){
+                    if (this.map[i][j] != 0) {
 
-                    g2d.setColor(Color.black);
-
-                    if(hexagon.isContainCapital()){
-                        g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(),hexagon.getPosY(), 100, 100, null);
-                    }else{
-                        g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
-                    }
-
-                    //Affichage des unités
-                    if(hexagon.getUnit() != null) {
-                        g2d.drawImage(this.infantry.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
-                        g2d.setColor(Color.red);
-
-                        g2d.drawString(String.valueOf(hexagon.getUnit().getId()), hexagon.getPosX()+40, hexagon.getPosY()+60);
                         g2d.setColor(Color.black);
 
+                        if (hexagon.isContainCapital()) {
+                            g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+                        } else {
+                            g2d.drawImage(hexagon.getTexture().getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+                        }
+
+                        //Affichage des unités
+                        if (hexagon.getUnit() != null) {
+                            g2d.drawImage(this.infantry.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+
+                            //g2d.setColor(Color.red);
+                            //g2d.drawString(String.valueOf(hexagon.getUnit().getId()), hexagon.getPosX() + 40, hexagon.getPosY() + 60);
+
+                            g2d.setColor(Color.yellow);
+                            g2d.drawString(String.valueOf(hexagon.getUnit().getHealth()), hexagon.getPosX() + 40, hexagon.getPosY() + 20);
+
+
+                            g2d.setColor(Color.black);
+
+                        }
+                    } else {
+                        g2d.drawImage(this.grass_dark.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
                     }
-                }else {
-                    g2d.drawImage(this.grass_dark.getTexture(), hexagon.getPosX(), hexagon.getPosY(), 100, 100, null);
+
+                    g2d.setFont(new Font("default", Font.BOLD, 16));
+                    //g2d.drawString(String.valueOf(hexagon.getId() + " " + hexagon.getDistancePlayer()), hexagon.getPosX() + 40, hexagon.getPosY() + 40);
+                    //g2d.drawString(String.valueOf(hexagon.getDistanceIa()), hexagon.getPosX()+40, hexagon.getPosY()+80);
+                    //g2d.drawString(String.valueOf(hexagon.getDistanceCapital()), hexagon.getPosX() + 40, hexagon.getPosY() + 80);
+                    //g2d.drawString(String.valueOf("prio " + hexagon.getDistancePriorityHexagon()), hexagon.getPosX()+40, hexagon.getPosY()+80);
                 }
-                g2d.setFont(new Font("default", Font.BOLD, 16));
-                g2d.drawString(String.valueOf(hexagon.getId() + " " + hexagon.getDistancePlayer()), hexagon.getPosX()+40, hexagon.getPosY()+40);
-                //g2d.drawString(String.valueOf(hexagon.getDistanceIa()), hexagon.getPosX()+40, hexagon.getPosY()+80);
-                //g2d.drawString(String.valueOf(hexagon.getDistanceBetweenCapitalJoueur() + " " + hexagon.getDistanceBetweenCapitalIa()), hexagon.getPosX()+40, hexagon.getPosY()+80);
-                g2d.drawString(String.valueOf("prio " + hexagon.getDistancePriorityHexagon()), hexagon.getPosX()+40, hexagon.getPosY()+80);
             }
         }
-
     }
 
     public static Player getCapitalJoueur() {
@@ -216,6 +234,12 @@ public class Grid extends JPanel {
     public static void resetViewIaHexagons() {
         for(Hexagon hexagon : hexagons){
             hexagon.setViewIa(false);
+        }
+    }
+
+    public static void resetViewCapitalIaHexagons() {
+        for(Hexagon hexagon : hexagons){
+            hexagon.setViewCapital(false);
         }
     }
 
@@ -343,7 +367,6 @@ public class Grid extends JPanel {
             file.remove(0);
         }
     }
-
 
     public void calculDistanceBetweenHexagonAndCapitalPlayer(){
 
