@@ -6,6 +6,7 @@ import com.serkox.state.AnalyseState;
 import java.util.ArrayList;
 
 public class PNJ extends Capital{
+    private static final int AI_LOOP_DELAY_MS = 1000;
     private State state;
 
     public PNJ(int id) {
@@ -16,22 +17,19 @@ public class PNJ extends Capital{
         maxGold = 1000;
         goldPerSec = 2;
         level = 1;
-        unitCollection = new ArrayList<Unit>();
+        unitCollection = new ArrayList<>();
 
         this.state = new AnalyseState();
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true){
-                    state.enter();
-                    state.update();
+        Thread thread = new Thread(() -> {
+            while(true){
+                state.enter();
+                state.update();
 
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(AI_LOOP_DELAY_MS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         });

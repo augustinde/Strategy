@@ -1,9 +1,11 @@
 package com.serkox.entity;
 
-import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class Unit {
+    private static final int MOVE_DELAY_MS = 675;
 
     private String id = UUID.randomUUID().toString();
     private int damage;
@@ -26,11 +28,11 @@ public class Unit {
        // this.speed = 1;
         //this.level = 1;
         this.hexagon = p_hexagon;
-        this.path = new ArrayList<Hexagon>();
+        this.path = new ArrayList<>();
         this.radius = 3;
         this.deplace = false;
         this.priorityLevel = 10;
-        this.scope = new ArrayList<Hexagon>();
+        this.scope = new ArrayList<>();
     }
 
    /* public int getLevel() {
@@ -78,80 +80,55 @@ public class Unit {
     }
 
     public void moveToDestination(Hexagon p_hexagon){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
-                    try {
-                        Thread.sleep(675);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Grid.getCapitalJoueur().getUnitToDeplace().setDeplace(false);
-                Grid.getCapitalJoueur().getUnitToDeplace().setWantMove(false);
-                Grid.getCapitalJoueur().setUnitToDeplace(null);
+        runMovement(() -> {
+            for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
+                sleepMovementDelay();
             }
+            Grid.getCapitalJoueur().getUnitToDeplace().setDeplace(false);
+            Grid.getCapitalJoueur().getUnitToDeplace().setWantMove(false);
+            Grid.getCapitalJoueur().setUnitToDeplace(null);
         });
-        thread.start();
     }
 
     public void moveToDestinationIa(Hexagon p_hexagon){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
-                    try {
-                        Thread.sleep(675);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+        runMovement(() -> {
+            for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+                sleepMovementDelay();
             }
         });
-        thread.start();
-
     }
 
     public void moveToCapitalIa(Hexagon p_hexagon){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalIa().getUnitToDeplace().moveCapitalIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
-                    try {
-                        Thread.sleep(675);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+        runMovement(() -> {
+            for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                Grid.getCapitalIa().getUnitToDeplace().moveCapitalIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+                sleepMovementDelay();
             }
         });
-        thread.start();
-
     }
 
     public void moveToDestinationPriorityHexagonIa(Hexagon p_hexagon){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
-                    try {
-                        Thread.sleep(675);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+        runMovement(() -> {
+            for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
+                Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+                sleepMovementDelay();
             }
         });
-        thread.start();
+    }
 
+    private void runMovement(Runnable movementAction) {
+        Thread thread = new Thread(movementAction);
+        thread.start();
+    }
+
+    private void sleepMovementDelay() {
+        try {
+            Thread.sleep(MOVE_DELAY_MS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -265,10 +242,10 @@ public class Unit {
         hexagonDepart.setViewPlayer(true);
         hexagonDepart.setDistancePlayer(0);
 
-        List<Hexagon> file = new ArrayList<Hexagon>();
+        List<Hexagon> file = new ArrayList<>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
@@ -299,10 +276,10 @@ public class Unit {
         hexagonDepart.setViewIa(true);
         hexagonDepart.setDistanceIa(0);
 
-        List<Hexagon> file = new ArrayList<Hexagon>();
+        List<Hexagon> file = new ArrayList<>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
@@ -340,10 +317,10 @@ public class Unit {
         hexagonDepart.setViewPriorityHexagon(true);
         hexagonDepart.setDistancePriorityHexagon(0);
 
-        List<Hexagon> file = new ArrayList<Hexagon>();
+        List<Hexagon> file = new ArrayList<>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
@@ -378,10 +355,10 @@ public class Unit {
         hexagonDepart.setViewCapital(true);
         hexagonDepart.setDistanceCapital(0);
 
-        List<Hexagon> file = new ArrayList<Hexagon>();
+        List<Hexagon> file = new ArrayList<>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
 

@@ -81,7 +81,7 @@ public class Grid extends JPanel {
      * Génération des hexagons de la grille (n'affiche pas)
      */
     public void createGrid(){
-        hexagons = new ArrayList<Hexagon>();
+        hexagons = new ArrayList<>();
 
         int y1=0,y2=0,y3=0,y4=0,y5=0,y6=0;
         int x1=0,x2=0,x3=0,x4=0,x5=0,x6=0;
@@ -354,7 +354,7 @@ public class Grid extends JPanel {
         List<Hexagon> file = new ArrayList<Hexagon>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
@@ -385,7 +385,7 @@ public class Grid extends JPanel {
         List<Hexagon> file = new ArrayList<Hexagon>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();

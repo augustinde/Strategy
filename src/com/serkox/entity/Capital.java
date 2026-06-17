@@ -34,7 +34,7 @@ public abstract class Capital {
 
     public Capital() {
         unitGoldCost = 100;
-        this.hexagonsInRadius = new ArrayList<Hexagon>();
+        this.hexagonsInRadius = new ArrayList<>();
         unitToDeplace = null;
 
     }
@@ -139,10 +139,10 @@ public abstract class Capital {
         hexagonDepart.setViewRadius(true);
         hexagonDepart.setDistanceRadius(0);
 
-        List<Hexagon> file = new ArrayList<Hexagon>();
+        List<Hexagon> file = new ArrayList<>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
