@@ -165,7 +165,7 @@ public class Grid extends JPanel {
     }
 
     public void setHexagons(List<Hexagon> hexagons) {
-        hexagons = hexagons;
+        Grid.hexagons = hexagons;
     }
 
     protected void paintComponent(Graphics g){

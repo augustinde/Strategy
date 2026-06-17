@@ -131,8 +131,8 @@ public abstract class Capital {
      */
     public void calculHexagonInRadius(){
 
-        //Grid.resetTextureHexagons();
-        Grid.resetViewPriorityHexagons();
+        this.hexagonsInRadius.clear();
+        Grid.resetViewRadiusHexagons();
 
         Hexagon hexagonDepart = this.getHexagon();
 
@@ -186,6 +186,10 @@ public abstract class Capital {
 
         this.resetPriorityHexagonInRadius();
         this.calculHexagonInRadius();
+        if (this.hexagonsInRadius.isEmpty()) {
+            System.out.println("Aucun hexagon disponible autour de la capital de l'IA");
+            return false;
+        }
         this.hexagonPriority = this.hexagonsInRadius.get(0);
 
         for(Hexagon hexagon : this.hexagonsInRadius){

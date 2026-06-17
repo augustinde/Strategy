@@ -210,11 +210,11 @@ public class Hexagon extends JButton implements MouseListener {
 
 			}else{
 
-				if(this.unit != null && Grid.getCapitalIa().getUnitCollection().contains(this.unit)){
+				if(this.unit != null && Grid.getCapitalIa().getUnitCollection().contains(this.unit) && Grid.getCapitalJoueur().getUnitToDeplace() != null){
 					Grid.getCapitalJoueur().getUnitToDeplace().attack(this);
 				}
 
-				if(this.containCapital && this.capital == Grid.getCapitalIa()){
+				if(this.containCapital && this.capital == Grid.getCapitalIa() && Grid.getCapitalJoueur().getUnitToDeplace() != null){
 					Grid.getCapitalJoueur().getUnitToDeplace().attack(this);
 				}
 

@@ -54,7 +54,7 @@ public class Unit {
     }
 
     public void setGoldCost(int goldCost) {
-        goldCost = goldCost;
+        Unit.goldCost = goldCost;
     }
 
     public int getHealth() {
@@ -82,7 +82,6 @@ public class Unit {
             @Override
             public void run() {
                 for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().get(i));
                     Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
                     try {
                         Thread.sleep(675);
@@ -103,7 +102,6 @@ public class Unit {
             @Override
             public void run() {
                 for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().get(i));
                     Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
                     try {
                         Thread.sleep(675);
@@ -123,7 +121,6 @@ public class Unit {
             @Override
             public void run() {
                 for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalIa().getUnitToDeplace().moveCapitalIa(Grid.getCapitalIa().getUnitToDeplace().getPath().get(i));
                     Grid.getCapitalIa().getUnitToDeplace().moveCapitalIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
                     try {
                         Thread.sleep(675);
@@ -143,7 +140,6 @@ public class Unit {
             @Override
             public void run() {
                 for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                    Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().get(i));
                     Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
                     try {
                         Thread.sleep(675);
@@ -296,6 +292,7 @@ public class Unit {
     public int calculDistanceUnitIa(){
 
         Grid.resetViewIaHexagons();
+        this.scope.clear();
 
         Hexagon hexagonDepart = this.getHexagon();
 

@@ -10,7 +10,7 @@ public class PNJ extends Capital{
 
     public PNJ(int id) {
         super();
-        id = id;
+        this.id = id;
         health = 150;
         currentGold = 0;
         maxGold = 1000;
