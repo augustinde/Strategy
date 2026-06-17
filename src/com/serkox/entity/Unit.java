@@ -81,20 +81,22 @@ public class Unit {
 
     public void moveToDestination(Hexagon p_hexagon){
         runMovement(() -> {
-            for(int i = Grid.getCapitalJoueur().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                Grid.getCapitalJoueur().getUnitToDeplace().move(Grid.getCapitalJoueur().getUnitToDeplace().getPath().remove(i));
+            Unit unitToMove = Grid.getCapitalJoueur().getUnitToDeplace();
+            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
+                unitToMove.move(unitToMove.getPath().remove(i));
                 sleepMovementDelay();
             }
-            Grid.getCapitalJoueur().getUnitToDeplace().setDeplace(false);
-            Grid.getCapitalJoueur().getUnitToDeplace().setWantMove(false);
+            unitToMove.setDeplace(false);
+            unitToMove.setWantMove(false);
             Grid.getCapitalJoueur().setUnitToDeplace(null);
         });
     }
 
     public void moveToDestinationIa(Hexagon p_hexagon){
         runMovement(() -> {
-            for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                Grid.getCapitalIa().getUnitToDeplace().moveIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+            Unit unitToMove = Grid.getCapitalIa().getUnitToDeplace();
+            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
+                unitToMove.moveIa(unitToMove.getPath().remove(i));
                 sleepMovementDelay();
             }
         });
@@ -102,8 +104,9 @@ public class Unit {
 
     public void moveToCapitalIa(Hexagon p_hexagon){
         runMovement(() -> {
-            for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                Grid.getCapitalIa().getUnitToDeplace().moveCapitalIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+            Unit unitToMove = Grid.getCapitalIa().getUnitToDeplace();
+            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
+                unitToMove.moveCapitalIa(unitToMove.getPath().remove(i));
                 sleepMovementDelay();
             }
         });
@@ -111,8 +114,9 @@ public class Unit {
 
     public void moveToDestinationPriorityHexagonIa(Hexagon p_hexagon){
         runMovement(() -> {
-            for(int i = Grid.getCapitalIa().getUnitToDeplace().getPath().size()-1; i>=0; i--){
-                Grid.getCapitalIa().getUnitToDeplace().moveToPriorityHexagonIa(Grid.getCapitalIa().getUnitToDeplace().getPath().remove(i));
+            Unit unitToMove = Grid.getCapitalIa().getUnitToDeplace();
+            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
+                unitToMove.moveToPriorityHexagonIa(unitToMove.getPath().remove(i));
                 sleepMovementDelay();
             }
         });
