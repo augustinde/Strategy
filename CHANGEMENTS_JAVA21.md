@@ -1,17 +1,14 @@
-# Migration Java 21 et corrections de bugs
+# Suppression Eclipse et corrections de bugs
 
-## 1) Migration vers Java 21
+## 1) Suppression des configurations Eclipse
 
-Le projet Eclipse a été migré de Java 11 vers Java 21 :
+Le projet est désormais orienté IntelliJ, les fichiers spécifiques à Eclipse ont été supprimés :
 
 - `/.classpath`
-  - Passage du conteneur JRE de `JavaSE-11` à `JavaSE-21`.
+- `/.project`
 - `/.settings/org.eclipse.jdt.core.prefs`
-  - `org.eclipse.jdt.core.compiler.codegen.targetPlatform=21`
-  - `org.eclipse.jdt.core.compiler.compliance=21`
-  - `org.eclipse.jdt.core.compiler.source=21`
 
-Cette mise à jour aligne la configuration du projet avec Java 21 pour la compilation et l’exécution dans Eclipse.
+La configuration Java est maintenant gérée via l’environnement IntelliJ.
 
 ## 2) Bugs corrigés
 
@@ -83,6 +80,22 @@ Correction : `this.scope.clear()` en début de calcul.
 
 Impact : évite l’accumulation d’anciens résultats et améliore la cohérence des décisions IA.
 
-## 3) Vérification
+## 3) Améliorations de bonnes pratiques (sans impact fonctionnel)
+
+- `src/com/serkox/main/Main.java`
+  - Nettoyage des imports inutiles et import explicite de `Fenetre`.
+- `src/com/serkox/entity/Fenetre.java`
+  - Suppression d’un import inutilisé (`java.sql.Time`).
+- `src/com/serkox/entity/PNJ.java`
+  - Utilisation du diamond operator, introduction d’une constante de délai, et remplacement de la classe anonyme par une lambda pour la boucle IA.
+- `src/com/serkox/entity/Unit.java`
+  - Remplacement des imports génériques par des imports explicites.
+  - Introduction d’une constante de délai de mouvement.
+  - Factorisation du pattern de création/lancement de thread via `runMovement(...)` et `sleepMovementDelay()`.
+  - Utilisation du diamond operator et simplification des conditions de boucle (`!file.isEmpty()`).
+- `src/com/serkox/entity/Grid.java`, `src/com/serkox/entity/Capital.java`
+  - Utilisation du diamond operator et simplification des conditions de boucle (`!file.isEmpty()`).
+
+## 4) Vérification
 
 Le projet compile après modifications avec `javac` sur l’ensemble des sources (`src/**/*.java`) dans l’environnement fourni.
