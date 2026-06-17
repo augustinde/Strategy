@@ -50,7 +50,7 @@ Impact : suppression des plantages par `NullPointerException` dans ces scénario
 - `src/com/serkox/entity/Capital.java`
 
 Corrections apportées :
-- Vidage de `hexagonsInRadius` avant recalcul pour éviter l’accumulation de doublons.
+- Nettoyage de `hexagonsInRadius` avant recalcul pour éviter l’accumulation de doublons.
 - Utilisation de `Grid.resetViewRadiusHexagons()` au lieu du reset de vue prioritaire.
 - Ajout d’un garde-fou si la liste est vide avant `get(0)`.
 
