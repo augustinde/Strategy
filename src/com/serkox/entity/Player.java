@@ -6,7 +6,7 @@ public class Player extends Capital{
 
     public Player(int pId) {
         super();
-        id = id;
+        this.id = pId;
         health = 150;
         currentGold = 0;
         maxGold = 1000;

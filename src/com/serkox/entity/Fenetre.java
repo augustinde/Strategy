@@ -3,7 +3,6 @@ package com.serkox.entity;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.Timer;
 
 public class Fenetre extends JFrame{

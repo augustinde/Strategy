@@ -34,7 +34,7 @@ public abstract class Capital {
 
     public Capital() {
         unitGoldCost = 100;
-        this.hexagonsInRadius = new ArrayList<Hexagon>();
+        this.hexagonsInRadius = new ArrayList<>();
         unitToDeplace = null;
 
     }
@@ -131,18 +131,18 @@ public abstract class Capital {
      */
     public void calculHexagonInRadius(){
 
-        //Grid.resetTextureHexagons();
-        Grid.resetViewPriorityHexagons();
+        this.hexagonsInRadius.clear();
+        Grid.resetViewRadiusHexagons();
 
         Hexagon hexagonDepart = this.getHexagon();
 
         hexagonDepart.setViewRadius(true);
         hexagonDepart.setDistanceRadius(0);
 
-        List<Hexagon> file = new ArrayList<Hexagon>();
+        List<Hexagon> file = new ArrayList<>();
         file.add(hexagonDepart);
 
-        while (file.size() != 0){
+        while (!file.isEmpty()){
 
             Hexagon hexagon = file.get(0);
             List<Hexagon> neighbors = hexagon.getNeighbors();
@@ -186,6 +186,10 @@ public abstract class Capital {
 
         this.resetPriorityHexagonInRadius();
         this.calculHexagonInRadius();
+        if (this.hexagonsInRadius.isEmpty()) {
+            System.out.println("Aucun hexagone disponible autour de la capitale de l'IA");
+            return false;
+        }
         this.hexagonPriority = this.hexagonsInRadius.get(0);
 
         for(Hexagon hexagon : this.hexagonsInRadius){
