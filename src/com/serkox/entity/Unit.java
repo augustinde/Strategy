@@ -82,8 +82,9 @@ public class Unit {
     public void moveToDestination(Hexagon p_hexagon){
         runMovement(() -> {
             Unit unitToMove = Grid.getCapitalJoueur().getUnitToDeplace();
-            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
-                unitToMove.move(unitToMove.getPath().remove(i));
+            while (!unitToMove.getPath().isEmpty()) {
+                int lastIndex = unitToMove.getPath().size() - 1;
+                unitToMove.move(unitToMove.getPath().remove(lastIndex));
                 sleepMovementDelay();
             }
             unitToMove.setDeplace(false);
@@ -95,8 +96,9 @@ public class Unit {
     public void moveToDestinationIa(Hexagon p_hexagon){
         runMovement(() -> {
             Unit unitToMove = Grid.getCapitalIa().getUnitToDeplace();
-            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
-                unitToMove.moveIa(unitToMove.getPath().remove(i));
+            while (!unitToMove.getPath().isEmpty()) {
+                int lastIndex = unitToMove.getPath().size() - 1;
+                unitToMove.moveIa(unitToMove.getPath().remove(lastIndex));
                 sleepMovementDelay();
             }
         });
@@ -105,8 +107,9 @@ public class Unit {
     public void moveToCapitalIa(Hexagon p_hexagon){
         runMovement(() -> {
             Unit unitToMove = Grid.getCapitalIa().getUnitToDeplace();
-            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
-                unitToMove.moveCapitalIa(unitToMove.getPath().remove(i));
+            while (!unitToMove.getPath().isEmpty()) {
+                int lastIndex = unitToMove.getPath().size() - 1;
+                unitToMove.moveCapitalIa(unitToMove.getPath().remove(lastIndex));
                 sleepMovementDelay();
             }
         });
@@ -115,8 +118,9 @@ public class Unit {
     public void moveToDestinationPriorityHexagonIa(Hexagon p_hexagon){
         runMovement(() -> {
             Unit unitToMove = Grid.getCapitalIa().getUnitToDeplace();
-            for(int i = unitToMove.getPath().size()-1; i>=0; i--){
-                unitToMove.moveToPriorityHexagonIa(unitToMove.getPath().remove(i));
+            while (!unitToMove.getPath().isEmpty()) {
+                int lastIndex = unitToMove.getPath().size() - 1;
+                unitToMove.moveToPriorityHexagonIa(unitToMove.getPath().remove(lastIndex));
                 sleepMovementDelay();
             }
         });
