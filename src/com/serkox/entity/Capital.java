@@ -187,7 +187,7 @@ public abstract class Capital {
         this.resetPriorityHexagonInRadius();
         this.calculHexagonInRadius();
         if (this.hexagonsInRadius.isEmpty()) {
-            System.out.println("Aucun hexagon disponible autour de la capitale de l'IA");
+            System.out.println("Aucun hexagone disponible autour de la capitale de l'IA");
             return false;
         }
         this.hexagonPriority = this.hexagonsInRadius.get(0);
